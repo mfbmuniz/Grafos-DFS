@@ -266,7 +266,7 @@ public class Main {
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
             Vertex[] grafoDFS = dfs(grafo);
-            System.out.println(" ");
+            System.out.println("aa ");
         } catch (Exception e) {
             e.printStackTrace();
         }
