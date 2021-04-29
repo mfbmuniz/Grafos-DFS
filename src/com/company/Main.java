@@ -213,14 +213,11 @@ public class Main {
 
                     for (Edge k : vizinhoAtual.arestas) {
                         Vertex vizinhoAtualDoVizinhoAtual = grafoCopia[k.getNumVertice()];
-                        if(vizinhoAtualDoVizinhoAtual.arestas.contains(atual.getNumVertice())) { ; //implementar contains
+                        if(vizinhoAtualDoVizinhoAtual.arestas.contains(atual.getNumVertice())) {
                             adicionaCiclo(caminhoAtual,ciclos,vizinhoAtual,atual);
                         }
                     }
-
                 }
-
-
             }
 
             atual.setCor(2);
