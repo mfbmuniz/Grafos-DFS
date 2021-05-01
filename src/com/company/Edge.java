@@ -1,6 +1,6 @@
 package com.company;
 
-public class Edge {
+public class Edge implements Comparable<Edge>{
 
     private int numVertice;
     private int peso;
@@ -60,5 +60,11 @@ public class Edge {
 
     public void setPai(int pai) {
         this.pai = pai;
+    }
+
+    @Override
+    public int compareTo(Edge e) {
+
+        return ( this.getNumVertice()>e.getNumVertice() ? -1  : (this.getNumVertice() < e.getNumVertice() ? 1:0));
     }
 }

@@ -172,7 +172,7 @@ public class Main {
     }
 
 
-    public static  List dfs(Vertex[]grafo, Vertex verticeInicial){
+    public static  List dfs(Vertex[]grafo, Vertex verticeInicialGrafoOriginal){
         try {
             // Vamos trabalhar com a copia do grafo original , este passo copia o grafo
             Vertex[] grafoCopia = new Vertex[grafo.length];
@@ -186,6 +186,7 @@ public class Main {
             }
             int timestamp = 0;
 
+            Vertex verticeInicial = grafoCopia[0];
             // Lista com as listas de ciclos
             List<List<Vertex>>ciclos  = new ArrayList<List<Vertex>>();
             //Lista com o caminho atual;
@@ -226,7 +227,7 @@ public class Main {
 
             for (Edge v : atual.arestas) {
                 Vertex vizinhoAtual = grafoCopia[v.getNumVertice()];
-                if(vizinhoAtual.getCor() == 1 && vizinhoAtual.getPai() != atual.getNumVertice() ){
+                if(vizinhoAtual.getCor() == 1 && vizinhoAtual.getNumVertice() != atual.getPai() ){
 
                     adicionaCicloComCaminhamento(caminhoAtual,ciclos,vizinhoAtual,atual);
 
@@ -235,10 +236,14 @@ public class Main {
                     if (vizinhoAtual.getPai() != atual.getNumVertice()){
                         adicionaCicloComCaminhamento(caminhoAtual,ciclos,vizinhoAtual,atual);
                     }
+                    //if(atual.getPai() != vizinhoAtual.getNumVertice()){
                     for (Edge k : vizinhoAtual.arestas) {
                         Vertex vizinhoAtualDoVizinhoAtual = grafoCopia[k.getNumVertice()];
-                        if(vizinhoAtualDoVizinhoAtual.arestas.contains(atual)) {
-                            adicionaCicloPreto(caminhoAtual,ciclos,vizinhoAtual,atual,vizinhoAtualDoVizinhoAtual);
+                        for (Edge l : vizinhoAtualDoVizinhoAtual.arestas ) {
+                            Vertex arestaDoVizinhoDoVizinho = grafoCopia[l.getNumVertice()];
+                            if (arestaDoVizinhoDoVizinho.getNumVertice() == atual.getNumVertice()) {
+                                adicionaCicloPreto(caminhoAtual, ciclos, vizinhoAtual, atual, vizinhoAtualDoVizinhoAtual);
+                            }
                         }
                     }
                 }
@@ -269,7 +274,7 @@ public class Main {
             }
             List cicloEncontradoTratado = new ArrayList<Vertex>();
             if(vizinhoAtual.getCor() == 1) {
-                cicloEncontradoTratado = cicloEncontrado.subList(indiceVizinhoAtual, indexVerticeAtual);
+                cicloEncontradoTratado = cicloEncontrado.subList(indiceVizinhoAtual, indexVerticeAtual+1);
                 cicloEncontradoTratado.add(vizinhoAtual.clone());
                 ciclos.add(cicloEncontradoTratado);
             }else if (vizinhoAtual.getCor() == 2) {
@@ -277,7 +282,9 @@ public class Main {
                 cicloEncontradoTratado.add(verticeAtual.clone());
                 ciclos.add(cicloEncontradoTratado);
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
     private static void adicionaCicloPreto(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual, Vertex vizinhoDoVizinho) {
@@ -310,6 +317,8 @@ public class Main {
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
+
+            List<List<Vertex>> ciclos = detectCycles(grafo);
             System.out.println("aa5 ");
         } catch (Exception e) {
             e.printStackTrace();
