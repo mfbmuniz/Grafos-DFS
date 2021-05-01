@@ -154,7 +154,25 @@ public class Main {
         }catch(Exception e){e.printStackTrace();return null;}
     }
 
-    public static  Vertex[] dfs(Vertex[]grafo){
+    public static List detectCycles (Vertex[] grafo){
+        List<List<Vertex>> arvoresDeBusca = new ArrayList<List<Vertex>>();
+        for (Vertex u : grafo) {
+
+
+            arvoresDeBusca.add( dfs(grafo,u) );
+
+        }
+        retirarRepetidos(arvoresDeBusca);
+        return arvoresDeBusca;
+    }
+
+    private static void retirarRepetidos(List<List<Vertex>> arvoresDeBusca) {
+
+
+    }
+
+
+    public static  List dfs(Vertex[]grafo, Vertex verticeInicial){
         try {
             // Vamos trabalhar com a copia do grafo original , este passo copia o grafo
             Vertex[] grafoCopia = new Vertex[grafo.length];
@@ -173,6 +191,9 @@ public class Main {
             //Lista com o caminho atual;
             List<Vertex> caminhoAtual = new ArrayList<Vertex>() ;
 
+            if (verticeInicial.getCor() == 0) { //se a cor for branca
+                timestamp = visitar(grafoCopia, timestamp,verticeInicial,ciclos,caminhoAtual); //lembrar que u e grafo copia estao sendo passados por referencia
+            }
 
             for (Vertex u : grafoCopia) {
                 if (u.getCor() == 0) { //se a cor for branca
@@ -180,7 +201,7 @@ public class Main {
                 }
             }
             grafoCopia[0].ciclos.addAll(ciclos);
-            return grafoCopia;
+            return ciclos;
         }catch (Exception e){e.printStackTrace();return null;}
 
     }
@@ -289,7 +310,6 @@ public class Main {
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
-            Vertex[] grafoDFS = dfs(grafo);
             System.out.println("aa5 ");
         } catch (Exception e) {
             e.printStackTrace();
