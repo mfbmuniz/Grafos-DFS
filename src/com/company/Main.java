@@ -205,16 +205,19 @@ public class Main {
 
             for (Edge v : atual.arestas) {
                 Vertex vizinhoAtual = grafoCopia[v.getNumVertice()];
-                if(vizinhoAtual.getCor() == 1 && vizinhoAtual.getNumVertice() != atual.getPai() ){
+                if(vizinhoAtual.getCor() == 1 && vizinhoAtual.getPai() != atual.getNumVertice() ){
 
-                    adicionaCiclo(caminhoAtual,ciclos,vizinhoAtual,atual);
+                    adicionaCicloComCaminhamento(caminhoAtual,ciclos,vizinhoAtual,atual);
 
                 }else if(vizinhoAtual.getCor() == 2){
 
+                    if (vizinhoAtual.getPai() != atual.getNumVertice()){
+                        adicionaCicloComCaminhamento(caminhoAtual,ciclos,vizinhoAtual,atual);
+                    }
                     for (Edge k : vizinhoAtual.arestas) {
                         Vertex vizinhoAtualDoVizinhoAtual = grafoCopia[k.getNumVertice()];
-                        if(vizinhoAtualDoVizinhoAtual.arestas.contains(atual.getNumVertice())) {
-                            adicionaCiclo(caminhoAtual,ciclos,vizinhoAtual,atual);
+                        if(vizinhoAtualDoVizinhoAtual.arestas.contains(atual)) {
+                            adicionaCicloPreto(caminhoAtual,ciclos,vizinhoAtual,atual,vizinhoAtualDoVizinhoAtual);
                         }
                     }
                 }
@@ -228,27 +231,51 @@ public class Main {
         }catch (Exception e){e.printStackTrace();return -1;}
     }
 
-    private static void adicionaCiclo(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual) {
+    private static void adicionaCicloComCaminhamento(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual) {
         try {
             List cicloEncontrado = new ArrayList<Vertex>();
             cicloEncontrado.addAll(caminhoAtual);
-            cicloEncontrado.add(vizinhoAtual.clone());
-            int index = 0;
-            for (int i=0; i< cicloEncontrado.size()-1; i++) {
+            int indexVerticeAtual = 0;
+            int indiceVizinhoAtual = 0;
+            for (int i=0; i< cicloEncontrado.size(); i++) {
                 Vertex v = (Vertex) cicloEncontrado.get(i);
+                if (v.getNumVertice() == verticeAtual.getNumVertice()){
+                    indexVerticeAtual = i;
+                }
                 if (v.getNumVertice() == vizinhoAtual.getNumVertice()){
-                    index = i;
+                    indiceVizinhoAtual = i;
                 }
             }
             List cicloEncontradoTratado = new ArrayList<Vertex>();
-            cicloEncontradoTratado = cicloEncontrado.subList(index,cicloEncontrado.size());
-            ciclos.add(cicloEncontradoTratado);
+            if(vizinhoAtual.getCor() == 1) {
+                cicloEncontradoTratado = cicloEncontrado.subList(indiceVizinhoAtual, indexVerticeAtual);
+                cicloEncontradoTratado.add(vizinhoAtual.clone());
+                ciclos.add(cicloEncontradoTratado);
+            }else if (vizinhoAtual.getCor() == 2) {
+                cicloEncontradoTratado = cicloEncontrado.subList(indexVerticeAtual,indiceVizinhoAtual);
+                cicloEncontradoTratado.add(verticeAtual.clone());
+                ciclos.add(cicloEncontradoTratado);
+            }
         }catch (Exception e){e.printStackTrace();}
 
     }
+    private static void adicionaCicloPreto(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual, Vertex vizinhoDoVizinho) {
+        try {
+
+            List cicloEncontrado = new ArrayList<Vertex>();
+            cicloEncontrado.add(verticeAtual.clone());
+            cicloEncontrado.add(vizinhoAtual.clone());
+            cicloEncontrado.add(vizinhoDoVizinho.clone());
+            cicloEncontrado.add(verticeAtual.clone());
+            ciclos.add(cicloEncontrado);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
-    public static void main(String[] args) {
+        public static void main(String[] args) {
         // write your code here
 
         try {

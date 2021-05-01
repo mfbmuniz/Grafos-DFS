@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Vertex {
+public class Vertex implements Comparable<Vertex> {
 
     private int numVertice;
     private int degree;
@@ -215,6 +215,11 @@ public class Vertex {
         this.tempoFinalizacao = tempoFinalizacao;
     }
 
-   // @Override
 
+
+    @Override
+    public int compareTo(Vertex o) {
+
+        return ( this.getNumVertice()>o.getNumVertice() ? -1  : (this.getNumVertice() < o.getNumVertice() ? 1:0));
+    }
 }
