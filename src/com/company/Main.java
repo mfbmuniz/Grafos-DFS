@@ -162,14 +162,11 @@ public class Main {
             arvoresDeBusca.add( dfs(grafo,u) );
 
         }
-        retirarRepetidos(arvoresDeBusca);
+        //retirarRepetidos(arvoresDeBusca);
         return arvoresDeBusca;
     }
 
-    private static void retirarRepetidos(List<List<Vertex>> arvoresDeBusca) {
 
-
-    }
 
 
     public static  List dfs(Vertex[]grafo, Vertex verticeInicialGrafoOriginal){
@@ -202,9 +199,75 @@ public class Main {
                 }
             }
             grafoCopia[0].ciclos.addAll(ciclos);
+            print(ciclos);
+            retirarRepetidos(ciclos);
+            print(ciclos);
+            int h=0;
             return ciclos;
         }catch (Exception e){e.printStackTrace();return null;}
 
+    }
+
+    private static void print(List<List<Vertex>> ciclos) {
+        int i = 0 ;
+        int j=0;
+        for ( List<Vertex> lista : ciclos) {
+           System.out.print("Posição:"+(i++)+", Vertices: ");
+            for (Vertex v: lista ) {
+                System.out.print(""+v.getNumVertice()+(","));
+            }
+            System.out.println(" ");
+        }
+    }
+
+    private static void retirarRepetidos(List<List<Vertex>> ciclos) {
+        try {
+            List<List<Vertex>> indicesDeRemocao ;
+            indicesDeRemocao = new ArrayList<List<Vertex>> ();
+            for (int i = 0; i < ciclos.size(); i++) {
+                if (ciclos.get(i) != null) {
+                    List<Vertex> cicloAtual = (List<Vertex>) ciclos.get(i);
+                    boolean flag = true;
+                    for (int j = 0; j < ciclos.size(); j++) {
+                        if (j != i && (ciclos.get(j) != null)) {
+                            List<Vertex> temp_CicloRetiradoDeCiclos = (List<Vertex>) ciclos.get(j);
+                            if (temp_CicloRetiradoDeCiclos.size() != cicloAtual.size()) {
+                                continue; //doing nothing.
+                            } else {
+                                for (Vertex v : temp_CicloRetiradoDeCiclos) {
+                                    if (!contemElemento(v, cicloAtual)) {
+                                        flag = false;
+                                    }
+                                }
+                                if (flag) {
+                                    indicesDeRemocao.add( ciclos.get(j) );
+                                }
+                                flag = true;
+                            }
+                        }
+                    }
+                 }
+            }
+            removerIndices(indicesDeRemocao,ciclos);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void removerIndices(List<List<Vertex>> indicesDeRemocao, List<List<Vertex>> ciclos) {
+
+        ciclos.removeAll(indicesDeRemocao);
+    }
+
+    private static boolean contemElemento(Vertex v, List<Vertex> cicloAtual) {
+        boolean resp = false;
+        for ( Vertex i: cicloAtual) {
+            if(v.getNumVertice() == i.getNumVertice()){
+                resp = true;
+                return resp;
+            }
+        }
+        return resp;
     }
 
 
@@ -278,7 +341,7 @@ public class Main {
                 cicloEncontradoTratado.add(vizinhoAtual.clone());
                 ciclos.add(cicloEncontradoTratado);
             }else if (vizinhoAtual.getCor() == 2) {
-                cicloEncontradoTratado = cicloEncontrado.subList(indexVerticeAtual,indiceVizinhoAtual);
+                cicloEncontradoTratado = cicloEncontrado.subList(indexVerticeAtual,indiceVizinhoAtual+1);
                 cicloEncontradoTratado.add(verticeAtual.clone());
                 ciclos.add(cicloEncontradoTratado);
             }

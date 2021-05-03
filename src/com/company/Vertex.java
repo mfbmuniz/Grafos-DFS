@@ -50,20 +50,6 @@ public class Vertex implements Comparable<Vertex> {
     }
 
     @Override
-    public String toString() {
-        return "Vertex{" +
-                "numVertice=" + numVertice +
-                ", grau=" + degree +
-                ", tipoGrafo=" + tipoGrafo +
-                ", cor=" + cor +
-                ", arestas=" + arestas +
-                ", pai=" + pai +
-                ", tamGrafo=" + tamGrafo +
-                ", caminhos=" + caminhos +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Vertex)) return false;
@@ -220,6 +206,12 @@ public class Vertex implements Comparable<Vertex> {
     @Override
     public int compareTo(Vertex o) {
 
-        return ( this.getNumVertice()>o.getNumVertice() ? -1  : (this.getNumVertice() < o.getNumVertice() ? 1:0));
+        return ( this.numVertice>o.getNumVertice() ? -1  : (this.numVertice < o.getNumVertice() ? 1:0));
+    }
+
+    @Override
+    public String toString(){
+        String resp = ( "Vertice: "+getNumVertice());
+        return resp;
     }
 }
