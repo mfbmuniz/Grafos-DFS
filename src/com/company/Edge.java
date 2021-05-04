@@ -67,4 +67,8 @@ public class Edge implements Comparable<Edge>{
 
         return ( this.getNumVertice()>e.getNumVertice() ? -1  : (this.getNumVertice() < e.getNumVertice() ? 1:0));
     }
+    @Override
+    public String toString(){
+        return (""+numVertice );
+    }
 }

@@ -155,19 +155,20 @@ public class Main {
     }
 
     public static List detectCycles (Vertex[] grafo){
-        List<List<Vertex>> arvoresDeBusca = new ArrayList<List<Vertex>>();
+        List ciclosSomados = new ArrayList<Vertex>();
         for (Vertex u : grafo) {
 
 
-            arvoresDeBusca.add( dfs(grafo,u) );
+            ciclosSomados.addAll( dfs(grafo,u) );
+            int auxdebug1 = 0 ;
 
         }
-        //retirarRepetidos(arvoresDeBusca);
-        return arvoresDeBusca;
+        int auxdebug2 =0;
+        retirarRepetidos(ciclosSomados);
+        print(ciclosSomados);
+        System.out.println("Total de ciclos: " +ciclosSomados.size());
+        return ciclosSomados;
     }
-
-
-
 
     public static  List dfs(Vertex[]grafo, Vertex verticeInicialGrafoOriginal){
         try {
@@ -183,7 +184,7 @@ public class Main {
             }
             int timestamp = 0;
 
-            Vertex verticeInicial = grafoCopia[0];
+            Vertex verticeInicial = grafoCopia[verticeInicialGrafoOriginal.getNumVertice()];
             // Lista com as listas de ciclos
             List<List<Vertex>>ciclos  = new ArrayList<List<Vertex>>();
             //Lista com o caminho atual;
@@ -198,78 +199,15 @@ public class Main {
                     timestamp = visitar(grafoCopia, timestamp,u,ciclos,caminhoAtual); //lembrar que u e grafo copia estao sendo passados por referencia
                 }
             }
-            grafoCopia[0].ciclos.addAll(ciclos);
-            print(ciclos);
+
+            System.out.println(" "+verticeInicial.getNumVertice());
             retirarRepetidos(ciclos);
-            print(ciclos);
             int h=0;
+            print(ciclos);
             return ciclos;
         }catch (Exception e){e.printStackTrace();return null;}
 
     }
-
-    private static void print(List<List<Vertex>> ciclos) {
-        int i = 0 ;
-        int j=0;
-        for ( List<Vertex> lista : ciclos) {
-           System.out.print("Posição:"+(i++)+", Vertices: ");
-            for (Vertex v: lista ) {
-                System.out.print(""+v.getNumVertice()+(","));
-            }
-            System.out.println(" ");
-        }
-    }
-
-    private static void retirarRepetidos(List<List<Vertex>> ciclos) {
-        try {
-            List<List<Vertex>> indicesDeRemocao ;
-            indicesDeRemocao = new ArrayList<List<Vertex>> ();
-            for (int i = 0; i < ciclos.size(); i++) {
-                if (ciclos.get(i) != null) {
-                    List<Vertex> cicloAtual = (List<Vertex>) ciclos.get(i);
-                    boolean flag = true;
-                    for (int j = 0; j < ciclos.size(); j++) {
-                        if (j != i && (ciclos.get(j) != null)) {
-                            List<Vertex> temp_CicloRetiradoDeCiclos = (List<Vertex>) ciclos.get(j);
-                            if (temp_CicloRetiradoDeCiclos.size() != cicloAtual.size()) {
-                                continue; //doing nothing.
-                            } else {
-                                for (Vertex v : temp_CicloRetiradoDeCiclos) {
-                                    if (!contemElemento(v, cicloAtual)) {
-                                        flag = false;
-                                    }
-                                }
-                                if (flag) {
-                                    indicesDeRemocao.add( ciclos.get(j) );
-                                }
-                                flag = true;
-                            }
-                        }
-                    }
-                 }
-            }
-            removerIndices(indicesDeRemocao,ciclos);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private static void removerIndices(List<List<Vertex>> indicesDeRemocao, List<List<Vertex>> ciclos) {
-
-        ciclos.removeAll(indicesDeRemocao);
-    }
-
-    private static boolean contemElemento(Vertex v, List<Vertex> cicloAtual) {
-        boolean resp = false;
-        for ( Vertex i: cicloAtual) {
-            if(v.getNumVertice() == i.getNumVertice()){
-                resp = true;
-                return resp;
-            }
-        }
-        return resp;
-    }
-
 
     private static int visitar(Vertex[] grafoCopia, int timestamp, Vertex atual, List<List<Vertex>> ciclos,List<Vertex> caminhoAtual){
         try {
@@ -347,6 +285,7 @@ public class Main {
             }
         }catch (Exception e){
             e.printStackTrace();
+            System.exit(0);
         }
 
     }
@@ -362,7 +301,73 @@ public class Main {
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(0);
         }
+    }
+
+    private static void print(List<List<Vertex>> ciclos) {
+        int i = 0 ;
+        int j=0;
+        for ( List<Vertex> lista : ciclos) {
+            System.out.print("Posição:"+(i++)+", Vertices: ");
+            for (Vertex v: lista ) {
+                System.out.print(""+v.getNumVertice()+(","));
+            }
+            System.out.println(" ");
+        }
+    }
+
+    private static void retirarRepetidos(List<List<Vertex>> ciclos) {
+        try {
+            List<List<Vertex>> indicesDeRemocao ;
+
+            for (int i = 0; i < ciclos.size(); i++) {
+                if (ciclos.get(i) != null) {
+                    List<Vertex> cicloAtual = (List<Vertex>) ciclos.get(i);
+                    indicesDeRemocao = new ArrayList<List<Vertex>> ();
+                    boolean flag = true;
+                    for (int j = 0; j < ciclos.size(); j++) {
+                        if (j != i && (ciclos.get(j) != null)) {
+                            List<Vertex> temp_CicloRetiradoDeCiclos = (List<Vertex>) ciclos.get(j);
+                            if (temp_CicloRetiradoDeCiclos.size() != cicloAtual.size()) {
+                                continue; //doing nothing.
+                            } else {
+                                for (Vertex v : temp_CicloRetiradoDeCiclos) {
+                                    if (!contemElemento(v, cicloAtual)) {
+                                        flag = false;
+                                    }
+                                }
+                                if (flag) {
+                                    indicesDeRemocao.add( ciclos.get(j) );
+                                }
+                                flag = true;
+                            }
+                        }
+                    }
+                    removerIndices(indicesDeRemocao,ciclos);
+                }
+
+            }
+            //removerIndices(indicesDeRemocao,ciclos);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void removerIndices(List<List<Vertex>> indicesDeRemocao, List<List<Vertex>> ciclos) {
+        int auxdebug = 0;
+        ciclos.removeAll(indicesDeRemocao);
+    }
+
+    private static boolean contemElemento(Vertex v, List<Vertex> cicloAtual) {
+        boolean resp = false;
+        for ( Vertex i: cicloAtual) {
+            if(v.getNumVertice() == i.getNumVertice()){
+                resp = true;
+                return resp;
+            }
+        }
+        return resp;
     }
 
 
