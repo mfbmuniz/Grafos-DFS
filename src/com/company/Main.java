@@ -276,11 +276,13 @@ public class Main {
             List cicloEncontradoTratado = new ArrayList<Vertex>();
             if(vizinhoAtual.getCor() == 1) {
                 cicloEncontradoTratado = cicloEncontrado.subList(indiceVizinhoAtual, indexVerticeAtual+1);
-                cicloEncontradoTratado.add(vizinhoAtual.clone());
+                cicloEncontradoTratado = ordenaInsercao(cicloEncontradoTratado);
+                cicloEncontradoTratado.add(cicloEncontradoTratado.get(0)); //era o vizinho
                 ciclos.add(cicloEncontradoTratado);
             }else if (vizinhoAtual.getCor() == 2) {
                 cicloEncontradoTratado = cicloEncontrado.subList(indexVerticeAtual,indiceVizinhoAtual+1);
-                cicloEncontradoTratado.add(verticeAtual.clone());
+                cicloEncontradoTratado = ordenaInsercao(cicloEncontradoTratado);
+                cicloEncontradoTratado.add(cicloEncontradoTratado.get(0));
                 ciclos.add(cicloEncontradoTratado);
             }
         }catch (Exception e){
@@ -289,6 +291,30 @@ public class Main {
         }
 
     }
+
+    private static ArrayList<Vertex> ordenaInsercao(List<Vertex> cicloEncontradoTratado) {
+
+        int[]valor_posicao_DoMenorElemento = {MAX_VALUE,MAX_VALUE};
+        for(int i=0 ; i<cicloEncontradoTratado.size() ;i++){
+            if(cicloEncontradoTratado.get(i).getNumVertice() < valor_posicao_DoMenorElemento[0]){
+                valor_posicao_DoMenorElemento[0] = cicloEncontradoTratado.get(i).getNumVertice();
+                valor_posicao_DoMenorElemento[1] = i;
+            }
+        }
+        List cicloOrdenado = new ArrayList<Vertex>();
+        int j = 0;
+        for (int i= valor_posicao_DoMenorElemento[1]  ; j< cicloEncontradoTratado.size();j++){
+
+            cicloOrdenado.add(cicloEncontradoTratado.get(i++));
+
+            if (i == cicloEncontradoTratado.size()){
+                i= 0;
+            }
+        }
+        return (ArrayList<Vertex>) cicloOrdenado;
+
+    }
+
     private static void adicionaCicloPreto(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual, Vertex vizinhoDoVizinho) {
         try {
 
@@ -297,6 +323,7 @@ public class Main {
             cicloEncontrado.add(vizinhoAtual.clone());
             cicloEncontrado.add(vizinhoDoVizinho.clone());
             cicloEncontrado.add(verticeAtual.clone());
+            cicloEncontrado = ordenaInsercao(cicloEncontrado);
             ciclos.add(cicloEncontrado);
 
         } catch (Exception e) {
