@@ -214,4 +214,12 @@ public class Vertex implements Comparable<Vertex> {
         String resp = ( "Vertice: "+getNumVertice());
         return resp;
     }
+    public boolean temAresta(Vertex vertex){
+        for (Edge e: vertex.arestas) {
+            if(this.numVertice == e.getNumVertice()){
+                return true;
+            }
+        }
+        return false;
+    }
 }

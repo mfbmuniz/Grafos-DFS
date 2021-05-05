@@ -71,4 +71,6 @@ public class Edge implements Comparable<Edge>{
     public String toString(){
         return (""+numVertice );
     }
+
+
 }
