@@ -279,6 +279,7 @@ public class Main {
             if(vizinhoAtual.getCor() == 1) {
                 cicloEncontradoTratado = cicloEncontrado.subList(indiceVizinhoAtual, indexVerticeAtual+1);
                 cicloEncontradoTratado = ordenaInsercao(cicloEncontradoTratado);
+                boolean cicloValido = validaCiclo(cicloEncontradoTratado);
                 cicloEncontradoTratado.add(cicloEncontradoTratado.get(0)); //era o vizinho
                 inserirNaLista(cicloEncontradoTratado,ciclos);   //ciclos.add(cicloEncontradoTratado);
             }else if (vizinhoAtual.getCor() == 2) {
@@ -292,6 +293,18 @@ public class Main {
             System.exit(0);
         }
 
+    }
+
+    private static boolean validaCiclo(List<Vertex> cicloEncontradoTratado) {
+        boolean cicloValido =false;
+        int i=0;
+        for (Vertex v : cicloEncontradoTratado){
+            int vizinho = i == cicloEncontradoTratado.size()-1 ? 0:i++;
+            if(v.temAresta(cicloEncontradoTratado.get(vizinho))){
+               cicloValido = true;
+            }
+        }
+        return cicloValido;
     }
 
     private static void inserirNaLista(List<Vertex> cicloEncontradoTratado, List<List<Vertex>> ciclos) {
