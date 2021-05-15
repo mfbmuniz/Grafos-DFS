@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -398,42 +399,6 @@ public class Main {
         }
     }
 
-    private static void retirarRepetidos(List<List<Vertex>> ciclos) {
-        try {
-            List<List<Vertex>> indicesDeRemocao ;
-
-            for (int i = 0; i < ciclos.size(); i++) {
-                if (ciclos.get(i) != null) {
-                    List<Vertex> cicloAtual = (List<Vertex>) ciclos.get(i);
-                    indicesDeRemocao = new ArrayList<List<Vertex>> ();
-                    boolean flag = true;
-                    for (int j = 0; j < ciclos.size(); j++) {
-                        if (j != i && (ciclos.get(j) != null)) {
-                            List<Vertex> temp_CicloRetiradoDeCiclos = (List<Vertex>) ciclos.get(j);
-                            if (temp_CicloRetiradoDeCiclos.size() != cicloAtual.size()) {
-                                continue; //doing nothing.
-                            } else{
-                                for (Vertex v : temp_CicloRetiradoDeCiclos) {
-                                    if (!contemElemento(v, cicloAtual)) {
-                                        flag = false;
-                                    }
-                                }
-                                if (flag) {
-                                    indicesDeRemocao.add( ciclos.get(j) );
-                                }
-                                flag = true;
-                            }
-                        }
-                    }
-                    removerIndices(indicesDeRemocao,ciclos);
-                }
-
-            }
-            //removerIndices(indicesDeRemocao,ciclos);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 
     private static void removerIndices(List<List<Vertex>> indicesDeRemocao, List<List<Vertex>> ciclos) {
         int auxdebug = 0;
@@ -451,6 +416,41 @@ public class Main {
         return resp;
     }
 
+
+    static void combinationUtil(Vertex[] arr, Vertex[] data, int start, int end, int index, int r, List<List<Vertex>> listaDeSubconjuntos) {
+
+        // Current combination is ready to be printed, print it
+        if (index == r){
+
+            listaDeSubconjuntos.add(Arrays.asList(data));
+            return;
+        }
+
+        // replace index with all possible elements. The condition
+        // "end-i+1 >= r-index" makes sure that including one element
+        // at index will make a combination with remaining elements
+        // at remaining positions
+        for (int i=start; i<=end && end-i+1 >= r-index; i++)
+        {
+            data[index] = arr[i];
+            combinationUtil(arr, data, i+1, end, index+1, r, listaDeSubconjuntos);
+        }
+    }
+
+    // The main function that prints all combinations of size r
+    // in arr[] of size n. This function mainly uses combinationUtil()
+    static List<List> saveCombinations(Vertex arr[]) {
+        // A temporary array to store all combination one by one
+        List<List<Vertex>> listaDeSubconjuntos  = new ArrayList<List<Vertex>>();
+        for (int i = 3; i < arr.length; i++) {
+            Vertex data[]=new Vertex[i];
+            combinationUtil(arr, data, 0, arr.length-1, 0, i,listaDeSubconjuntos);
+        }
+
+
+        // Print all combination using temprary array 'data[]'
+
+    }
 
         public static void main(String[] args) {
         // write your code here
