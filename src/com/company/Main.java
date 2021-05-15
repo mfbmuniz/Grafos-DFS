@@ -417,44 +417,43 @@ public class Main {
     }
 
 
-    static void combinationUtil(Vertex[] arr, Vertex[] data, int start, int end, int index, int r, List<List<Vertex>> listaDeSubconjuntos) {
+    static void combinationUtil(Vertex[] arr, Vertex[] data, int start, int end, int index, int tamSubconjunto, List<List<Vertex>> listaDeSubconjuntos) {
+        try {
+            // Current combination is ready to be stored, store.
+            if (index == tamSubconjunto) {
 
-        // Current combination is ready to be printed, print it
-        if (index == r){
+                List<Vertex> subconjuntoEncontrado = new ArrayList<Vertex>();
+                subconjuntoEncontrado.addAll(Arrays.asList(data));
+                subconjuntoEncontrado = ordenaInsercao(subconjuntoEncontrado);
+                inserirNaLista(subconjuntoEncontrado, listaDeSubconjuntos);   //ciclos.add(cicloEncontradoTratado);
+                return;
+            }
 
-            listaDeSubconjuntos.add(Arrays.asList(data));
-            return;
-        }
-
-        // replace index with all possible elements. The condition
-        // "end-i+1 >= r-index" makes sure that including one element
-        // at index will make a combination with remaining elements
-        // at remaining positions
-        for (int i=start; i<=end && end-i+1 >= r-index; i++)
-        {
-            data[index] = arr[i];
-            combinationUtil(arr, data, i+1, end, index+1, r, listaDeSubconjuntos);
+            // replace index with all possible elements. The condition
+            // "end-i+1 >= r-index" makes sure that including one element
+            // at index will make a combination with remaining elements
+            // at remaining positions
+            for (int i = start; i <= end && end - i + 1 >= tamSubconjunto - index; i++) {
+                data[index] = arr[i].clone();
+                combinationUtil(arr, data, i + 1, end, index + 1, tamSubconjunto, listaDeSubconjuntos);
+            }
+        }catch (Exception  e){
+            e.printStackTrace();
         }
     }
 
-    // The main function that prints all combinations of size r
-    // in arr[] of size n. This function mainly uses combinationUtil()
-    static List<List> saveCombinations(Vertex arr[]) {
-        // A temporary array to store all combination one by one
+
+    static List<List<Vertex>> saveSubsets(Vertex arr[]) {
+        // A temporary array 'subconjuntoAtual' to store all subsets one by one
         List<List<Vertex>> listaDeSubconjuntos  = new ArrayList<List<Vertex>>();
         for (int i = 3; i < arr.length; i++) {
-            Vertex data[]=new Vertex[i];
-            combinationUtil(arr, data, 0, arr.length-1, 0, i,listaDeSubconjuntos);
+            Vertex subconjuntoAtual[]=new Vertex[i];
+            combinationUtil(arr, subconjuntoAtual, 0, arr.length-1, 0, i,listaDeSubconjuntos);
         }
-
-
-        // Print all combination using temprary array 'data[]'
-
+        return listaDeSubconjuntos;
     }
 
         public static void main(String[] args) {
-        // write your code here
-
         try {
 
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -467,8 +466,10 @@ public class Main {
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
 
-            List<List<Vertex>> ciclos = detectCycles(grafo);
-            System.out.println("aa5 ");
+            List<List<Vertex>> subSets = saveSubsets(grafo);
+
+            //List<List<Vertex>> ciclos = detectCycles(grafo);
+            //System.out.println("aa5 ");
         } catch (Exception e) {
             e.printStackTrace();
         }
