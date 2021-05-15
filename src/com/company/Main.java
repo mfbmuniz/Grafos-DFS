@@ -3,9 +3,7 @@ package com.company;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 public class Main {
@@ -446,14 +444,89 @@ public class Main {
     static List<List<Vertex>> saveSubsets(Vertex arr[]) {
         // A temporary array 'subconjuntoAtual' to store all subsets one by one
         List<List<Vertex>> listaDeSubconjuntos  = new ArrayList<List<Vertex>>();
-        for (int i = 3; i < arr.length; i++) {
+        for (int i = 3; i <= arr.length; i++) {
             Vertex subconjuntoAtual[]=new Vertex[i];
             combinationUtil(arr, subconjuntoAtual, 0, arr.length-1, 0, i,listaDeSubconjuntos);
         }
         return listaDeSubconjuntos;
     }
 
-        public static void main(String[] args) {
+
+    static void searchPermutations(String str, String ans ,List<String> permutations) {
+    try{
+        // If string is empty
+        if (str.length() == 0) {
+            permutations.add(ans);
+            return;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+
+            // ith character of str
+            char ch = str.charAt(i);
+
+            // Rest of the string after excluding
+            // the ith character
+            String ros = str.substring(0, i) +
+                    str.substring(i + 1);
+
+            // Recurvise call
+            searchPermutations(ros, ans + ch , permutations);
+        }
+    }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void searchCyclesWithPermutations(Vertex []grafo){
+        try {
+            List<List<Vertex>> subSets = saveSubsets(grafo);
+            List<List<Vertex>> ciclos = new ArrayList<List<Vertex>>();
+
+            for (List<Vertex> actualSubset: subSets) {
+                String actualSubsetParsedString = "";
+                for (Vertex v : actualSubset) {
+                    actualSubsetParsedString+= v.getNumVertice();
+                }
+                List<String> permutations = new LinkedList<String>();
+                searchPermutations(actualSubsetParsedString, "", permutations);
+                addValidCycles(permutations,grafo,ciclos);
+
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void addValidCycles(List<String> permutations, Vertex[] grafo, List<List<Vertex>> ciclos) {
+        try {
+            for (String s : permutations) {
+                List<Vertex> cicloAtual = new ArrayList<Vertex>();
+                for (int i = 0; i < s.length(); i++) {
+                    int numNerticeAtual = Integer.parseInt(s.substring(0, i + 1));
+                    int pos = posicaoVertice(grafo, numNerticeAtual);
+                    cicloAtual.add(grafo[pos].clone());
+                }
+
+                inserirNaLista(cicloAtual,ciclos);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public static int posicaoVertice(Vertex [] grafo , int numVertice ){
+        for (int i = 0; i < grafo.length; i++) {
+            if(grafo[i].getNumVertice() == numVertice ){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
         try {
 
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -465,11 +538,8 @@ public class Main {
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
-
-            List<List<Vertex>> subSets = saveSubsets(grafo);
-
             //List<List<Vertex>> ciclos = detectCycles(grafo);
-            //System.out.println("aa5 ");
+            System.out.println("aa5 ");
         } catch (Exception e) {
             e.printStackTrace();
         }
