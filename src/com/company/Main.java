@@ -100,7 +100,7 @@ public class Main {
 
     /**
      * Metodo que retorna uma String com as arestas do grafo formatada conforme o padrao do enunciado
-     * @param grafo1 grafo a ser analizado
+     * @param grafo1 grafo a ser analisado
      * @return string com as arestas do grafo
      */
     public static String printArestasPadrao (Vertex [] grafo1){
@@ -153,9 +153,15 @@ public class Main {
         }catch(Exception e){e.printStackTrace();return null;}
     }
 
+
+    /**
+     * Metodo que detecta ciclos em um grafo usando busca em profundidade
+     * @param grafo grafo a ser analisado
+     * @return List com TODOS os ciclos detectados sem repeticoes
+     */
     public static List detectCycles (Vertex[] grafo){
         List ciclosSomados = new ArrayList<List<Vertex>>();
-        /*for (Vertex u : grafo) {
+        for (Vertex u : grafo) {
             //ciclosSomados.addAll( dfs(grafo,u) );
             List<List> listaTemp = new ArrayList<>();
             listaTemp.addAll( dfs(grafo,u) );
@@ -164,13 +170,19 @@ public class Main {
                 inserirNaLista(l,ciclosSomados);
             }
 
-        }*/
-        ciclosSomados.addAll( dfs(grafo,(Vertex) grafo[5]) );
-        int auxdebug2 =0;
+        }
+        System.out.println("Enumeração dos ciclos: ");
         print(ciclosSomados);
         System.out.println("Total de ciclos: " +ciclosSomados.size());
         return ciclosSomados;
     }
+
+    /**
+     * Implementacao da Busca em profundidade Modificada para encontrar ciclos
+     * @param grafo grafo a ser analisado
+     * @param verticeInicialGrafoOriginal vertice onde a busca se iniciará
+     * @return List com os ciclos detectados sem repeticoes a partir do vertice atual escolhido como parametro.
+     */
 
     public static  List dfs(Vertex[]grafo, Vertex verticeInicialGrafoOriginal){
         try {
@@ -202,14 +214,22 @@ public class Main {
                 }
             }
 
-            System.out.println(" "+verticeInicial.getNumVertice());
-            int h=0;
+            System.out.println("Ciclos Para o Vertice: "+verticeInicial.getNumVertice());
             print(ciclos);
+            System.out.println("-------------------------------------------------------");
             return ciclos;
         }catch (Exception e){e.printStackTrace();return null;}
 
     }
-
+    /**
+     * Implementacao do metodo visita, da busca em profundidade (recursivo)
+     * @param grafoCopia grafo a ser analisado (copia do grafo original)
+     * @param atual vertice atual, iniciando no vertice passado como parametro no dfs e alterando conforme a recursividade é chamada.
+     * @param caminhoAtual caminho percorrido
+     * @param ciclos Lista geral de ciclos a partir do vertice inicial, passada por referencia para o preenchimento correto no metodo de visita.
+     * @param timestamp tempo de descoberta da busca em profundidade.
+     * @return int com o valor do timestamp.
+     */
     private static int visitar(Vertex[] grafoCopia, int timestamp, Vertex atual, List<List<Vertex>> ciclos,List<Vertex> caminhoAtual){
         try {
 
@@ -219,7 +239,8 @@ public class Main {
             atual.setCor(1);
             for (Edge v : atual.arestas) {
                 Vertex vizinhoAtual = grafoCopia[v.getNumVertice()];
-                if (vizinhoAtual.getCor() == 0) {
+
+                if (vizinhoAtual.getCor() == 0) { //verifica se o próximo vertice é branco( nao visitado)
 
                     vizinhoAtual.setPai(atual.getNumVertice());
                     visitar(grafoCopia,timestamp,vizinhoAtual,ciclos,caminhoAtual);
@@ -227,18 +248,22 @@ public class Main {
                 }
             }
 
+            //após a busca, na volta da recursividade adicionamos as logicas abaixo para deteccao de ciclos
+
             for (Edge v : atual.arestas) {
                 Vertex vizinhoAtual = grafoCopia[v.getNumVertice()];
-                if(vizinhoAtual.getCor() == 1 && vizinhoAtual.getNumVertice() != atual.getPai() ){
+                if(vizinhoAtual.getCor() == 1 && vizinhoAtual.getNumVertice() != atual.getPai() ){ //se o vertice ja foi visitado e não finalizado , não é meu pai, e é meu vizinho.
 
+                    // tenho um ciclo que percorre o caminho atual até mim, pegando a sublista a partir deste vizinho até mim + o vizinho(aresta até entao desconhecida).
                     adicionaCicloComCaminhamento(caminhoAtual,ciclos,vizinhoAtual,atual);
 
-                }else if(vizinhoAtual.getCor() == 2){
+                }else if(vizinhoAtual.getCor() == 2){ //se o vertice já foi finalizado e é meu viznho
 
+                    //se ja foi finalizado e não é meu filho, só pode ser um ciclo
                     if (vizinhoAtual.getPai() != atual.getNumVertice()){
                         adicionaCicloComCaminhamento(caminhoAtual,ciclos,vizinhoAtual,atual);
                     }
-                    //if(atual.getPai() != vizinhoAtual.getNumVertice()){
+                    //se o vizinho do meu vizinho(não contando comigo) tem aresta comigo é um ciclo, pois caracteriza um caminho novo
                     for (Edge k : vizinhoAtual.arestas) {
                         Vertex vizinhoAtualDoVizinhoAtual = grafoCopia[k.getNumVertice()];
                         for (Edge l : vizinhoAtualDoVizinhoAtual.arestas ) {
@@ -259,6 +284,14 @@ public class Main {
         }catch (Exception e){e.printStackTrace();return -1;}
     }
 
+    /**
+     * Implementacao do metodo que adiciona o ciclo detectado a partir do caminhamento na lista de ciclos permanentes sem repeticoes
+     * @param verticeAtual verticeAtual da busca em largura
+     * @param vizinhoAtual vizinho com qual detectei ciclo
+     * @param caminhoAtual caminho percorrido
+     * @param ciclos Lista geral de ciclos a partir do vertice inicial, passada por referencia para o preenchimento correto no metodo de visita.
+     * @return void
+     */
     private static void adicionaCicloComCaminhamento(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual) {
         try {
             List cicloEncontrado = new ArrayList<Vertex>();
@@ -295,11 +328,17 @@ public class Main {
 
     }
 
+    /**
+     * Implementacao do metodo que valida se o ciclo emcontrado é mesmo um ciclo quando comparado com o grafo original, atravez da conferencia das arestas
+     * @param cicloEncontradoTratado Lista com o ciclo a ser conferido.
+     * @return boolean com true para valido e false para ciclo invalido.
+     */
+
     private static boolean validaCiclo(List<Vertex> cicloEncontradoTratado) {
         boolean cicloValido =false;
         int i=0;
         for (Vertex v : cicloEncontradoTratado){
-            int vizinho = i == cicloEncontradoTratado.size()-1 ? 0:++i;
+            int vizinho = (i == cicloEncontradoTratado.size()-1 ? 0:++i);
             if(v.temAresta(cicloEncontradoTratado.get(vizinho))){
                 cicloValido = true;
             }else{
@@ -308,6 +347,13 @@ public class Main {
         }
         return cicloValido;
     }
+
+    /**
+     * Implementacao do metodo que insere na lista definitiva sem repeticoes
+     * @param cicloEncontradoTratado Lista com o ciclo a ser inserido.
+     * @param ciclos lista de ciclos
+     * @return boolean com true para valido e false para ciclo invalido.
+     */
 
     private static void inserirNaLista(List<Vertex> cicloEncontradoTratado, List<List<Vertex>> ciclos) {
         String ciclo_atual;
@@ -328,6 +374,12 @@ public class Main {
         }
         ciclos.add(cicloEncontradoTratado);
     }
+    /**
+     * Implementacao do metodo que ordena o ciclo a partir do menor (colocando o menor na posicao 0 e girando para esquerda ou para direita)
+     * dependendo de onde está o segundo menor valor, sem desordenar a sequencia de vertices que forma o ciclo
+     * @param cicloEncontradoTratado Lista com o ciclo a ser conferido.
+     * @return ArrayList<Vertex> ccom o ciclo ordenado
+     */
 
     private static ArrayList<Vertex> ordenaInsercao(List<Vertex> cicloEncontradoTratado) {
 
@@ -369,6 +421,14 @@ public class Main {
         return (ArrayList<Vertex>) cicloOrdenado;
     }
 
+    /**
+     * Implementacao do metodo que adiciona o ciclo detectado a partir vertice finalizado na lista de ciclos permanentes sem repeticoes
+     * @param verticeAtual verticeAtual da busca em largura
+     * @param vizinhoAtual vizinho com qual detectei ciclo
+     * @param caminhoAtual caminho percorrido
+     * @param ciclos Lista geral de ciclos a partir do vertice inicial, passada por referencia para o preenchimento correto no metodo de visita.
+     * @return void
+     */
     private static void adicionaCicloPreto(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual, Vertex vizinhoDoVizinho) {
         try {
 
@@ -386,7 +446,11 @@ public class Main {
             System.exit(0);
         }
     }
-
+    /**
+     * Implementacao do metodo que recebe uma Lista de ciclos e printa na saida padrão
+     * @param ciclos Lista geral de ciclos a partir do vertice inicial, passada por referencia.
+     * @return void
+     */
     private static void print(List<List<Vertex>> ciclos) {
         int i = 0 ;
         int j=0;
@@ -398,6 +462,19 @@ public class Main {
             System.out.println(" ");
         }
     }
+
+    /**
+     * Implementacao do metodo recursivo que gera todas os subconjuntos com 'R' elementos de uma determinada sequencia
+     * no nosso caso estamos gerando todos os subconjuntos do grafo para permutar posteriormente.
+     * @param arr GrafoAtual
+     * @param data array de tamanho 'R' que contem o numero 'r' de elementos do subconjuntos atuais.
+     * @param end marcador posicionado no fim do grafo iniciamente que será movimentado com a recursão
+     * @param index marcador posicionado inicialmente no inicio do grafo que será movimentado com a recursão
+     * @param listaDeSubconjuntos lista de subconjuntos encontrados.
+     * @param start  marcador posicionado inicialmente no inicio do array que será movimentado com a recursão
+     * @param tamSubconjunto tamanho 'R' do subconjunto atual.
+     * @return void
+     */
 
     static void combinationUtil(Vertex[] arr, Vertex[] data, int start, int end, int index, int tamSubconjunto, List<List<Vertex>> listaDeSubconjuntos) {
         try {
@@ -424,17 +501,29 @@ public class Main {
         }
     }
 
-
-    static List<List<Vertex>> saveSubsets(Vertex arr[]) {
+    /**
+     * Implementacao do metodo que recebe um grafo para salvar os seus subconjuntos em uma lista
+     * @param grafo grafo a ser analisado
+     * @return Lista de todos os subconjuntos deste grafo
+     */
+    static List<List<Vertex>> saveSubsets(Vertex grafo[]) {
         // A temporary array 'subconjuntoAtual' to store all subsets one by one
         List<List<Vertex>> listaDeSubconjuntos  = new ArrayList<List<Vertex>>();
-        for (int i = 3; i <= arr.length; i++) {
+        for (int i = 3; i <= grafo.length; i++) {
             Vertex subconjuntoAtual[]=new Vertex[i];
-            combinationUtil(arr, subconjuntoAtual, 0, arr.length-1, 0, i,listaDeSubconjuntos);
+            combinationUtil(grafo, subconjuntoAtual, 0, grafo.length-1, 0, i,listaDeSubconjuntos);
         }
         return listaDeSubconjuntos;
     }
 
+    /**
+     * Implementacao do metodo que recebe uma sequencia de vertices em formato de string
+     * encontra todas as permutações para este determinado subconjunto e salva na lista
+     * @param str String com a sequencia inicial dos vertices
+     * @param ans resposta que está sendo construida com a recursividade
+     * @param permutations lista de permutacoes onde será salvo as permutacoes encontradas
+     * @return Lista de todos os subconjuntos deste grafo
+     */
 
     static void searchPermutations(String str, String ans ,List<String> permutations) {
     try{
@@ -457,16 +546,22 @@ public class Main {
             // Recurvise call
             searchPermutations(ros, ans + ch , permutations);
         }
+
     }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-
+    /**
+     * Implementacao do metodo que procura e imprime ciclos em um grafo baseado em permutações de seus vertices
+     * @param grafo grafo a ser analisado
+     * @return void
+     */
     public static void searchCyclesWithPermutations(Vertex []grafo){
         try {
             List<List<Vertex>> subSets = saveSubsets(grafo);
             List<List<Vertex>> ciclos = new ArrayList<List<Vertex>>();
+            int numberOfPermutations =0;
 
             for (List<Vertex> actualSubset: subSets) {
                 String actualSubsetParsedString = "";
@@ -474,33 +569,60 @@ public class Main {
                     actualSubsetParsedString+= v.getNumVertice();
                 }
                 List<String> permutations = new LinkedList<String>();
+
                 searchPermutations(actualSubsetParsedString, "", permutations);
+                numberOfPermutations += permutations.size();
                 addValidCycles(permutations,grafo,ciclos);
 
             }
+            //imprime o numero de permutações na tela
+            System.out.println("Number of Pertmurations: "+numberOfPermutations);
+
+            //imprime a lista de ciclos
+            System.out.println("Ciclos encontrados: ");
+            print(ciclos);
+
 
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    /**
+     * Implementacao do metodo que recebe uma lista das permutações da sequencia atual de vertices , verifica no
+     * grafo se é um ciclo válido e insere na lista se verdadeiro
+     * @param grafo grafo a ser analisado
+     * @param ciclos lista definitiva de ciclos
+     * @param permutations permutações do subconjunto atual
+     * @return void
+     */
     private static void addValidCycles(List<String> permutations, Vertex[] grafo, List<List<Vertex>> ciclos) {
         try {
             for (String s : permutations) {
                 List<Vertex> cicloAtual = new ArrayList<Vertex>();
                 for (int i = 0; i < s.length(); i++) {
-                    int numNerticeAtual = Integer.parseInt(s.substring(0, i + 1));
+                    String s1 = "";
+                    s1 += s.charAt(i);
+                    int numNerticeAtual = Integer.parseInt(s1);
                     int pos = posicaoVertice(grafo, numNerticeAtual);
                     cicloAtual.add(grafo[pos].clone());
                 }
-
-                inserirNaLista(cicloAtual,ciclos);
+                cicloAtual = ordenaInsercao(cicloAtual);
+                boolean cicloValido = validaCiclo(cicloAtual);
+                cicloAtual.add(cicloAtual.get(0));
+                if(cicloValido) inserirNaLista(cicloAtual,ciclos);
 
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
+    /**
+     * Implementacao do metodo que um rotulo de vertice e procura sua posição no grafo
+     * @param grafo grafo a ser analisado
+     * @param numVertice numero do vertice a ser analisado
+     * @return Lista de todos os subconjuntos deste grafo
+     */
     public static int posicaoVertice(Vertex [] grafo , int numVertice ){
         for (int i = 0; i < grafo.length; i++) {
             if(grafo[i].getNumVertice() == numVertice ){
@@ -513,17 +635,29 @@ public class Main {
     public static void main(String[] args) {
         try {
 
+            System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub3.in) ");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
             String lidoArquivo = lerGrafoArquivo(input.readLine());
+            System.out.print("Lido do Arquivo: ");
             System.out.println(lidoArquivo);
-
-            String[] arrayLidoArquivo = lidoArquivo.split(";");
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
+            System.out.print("Arestas padrão após grafo montado: ");
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
-            //List<List<Vertex>> ciclos = detectCycles(grafo);
-            System.out.println("aa5 ");
+            System.out.println("------------------------------------------------------- ");
+            System.out.println("Ciclos a partir da busca em profundidade: ");
+            long startTime = System.currentTimeMillis();
+            List<List<Vertex>> ciclos = detectCycles(grafo);
+            long totalTime = System.currentTimeMillis() - startTime;
+            System.out.println("Tempo total: "+totalTime+" ms.");
+            System.out.println(" ");
+            System.out.println("Ciclos a partir das permutações: ");
+            startTime = System.currentTimeMillis();
+            searchCyclesWithPermutations(grafo);
+            totalTime = System.currentTimeMillis() - startTime;
+            System.out.println("Tempo total: "+totalTime+" ms. ");
+            System.out.println(" ");
         } catch (Exception e) {
             e.printStackTrace();
         }
