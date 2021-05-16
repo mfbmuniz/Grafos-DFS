@@ -280,12 +280,13 @@ public class Main {
                 cicloEncontradoTratado = ordenaInsercao(cicloEncontradoTratado);
                 boolean cicloValido = validaCiclo(cicloEncontradoTratado);
                 cicloEncontradoTratado.add(cicloEncontradoTratado.get(0)); //era o vizinho
-                inserirNaLista(cicloEncontradoTratado,ciclos);   //ciclos.add(cicloEncontradoTratado);
+                if(cicloValido) inserirNaLista(cicloEncontradoTratado,ciclos);   //ciclos.add(cicloEncontradoTratado);
             }else if (vizinhoAtual.getCor() == 2) {
                 cicloEncontradoTratado = cicloEncontrado.subList(indexVerticeAtual,indiceVizinhoAtual+1);
                 cicloEncontradoTratado = ordenaInsercao(cicloEncontradoTratado);
+                boolean cicloValido = validaCiclo(cicloEncontradoTratado);
                 cicloEncontradoTratado.add(cicloEncontradoTratado.get(0)); //era o atual
-                inserirNaLista(cicloEncontradoTratado,ciclos);
+                if(cicloValido)inserirNaLista(cicloEncontradoTratado,ciclos);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -298,9 +299,11 @@ public class Main {
         boolean cicloValido =false;
         int i=0;
         for (Vertex v : cicloEncontradoTratado){
-            int vizinho = i == cicloEncontradoTratado.size()-1 ? 0:i++;
+            int vizinho = i == cicloEncontradoTratado.size()-1 ? 0:++i;
             if(v.temAresta(cicloEncontradoTratado.get(vizinho))){
-               cicloValido = true;
+                cicloValido = true;
+            }else{
+                return false;
             }
         }
         return cicloValido;
@@ -324,7 +327,6 @@ public class Main {
             }
         }
         ciclos.add(cicloEncontradoTratado);
-
     }
 
     private static ArrayList<Vertex> ordenaInsercao(List<Vertex> cicloEncontradoTratado) {
@@ -365,7 +367,6 @@ public class Main {
             }
         }
         return (ArrayList<Vertex>) cicloOrdenado;
-
     }
 
     private static void adicionaCicloPreto(List<Vertex> caminhoAtual, List<List<Vertex>> ciclos , Vertex vizinhoAtual,Vertex verticeAtual, Vertex vizinhoDoVizinho) {
@@ -376,8 +377,9 @@ public class Main {
             cicloEncontrado.add(vizinhoAtual.clone());
             cicloEncontrado.add(vizinhoDoVizinho.clone());
             cicloEncontrado = ordenaInsercao(cicloEncontrado);
+            boolean cicloValido = validaCiclo(cicloEncontrado);
             cicloEncontrado.add(cicloEncontrado.get(0));
-            inserirNaLista(cicloEncontrado,ciclos);
+            if(cicloValido) inserirNaLista(cicloEncontrado,ciclos);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -396,24 +398,6 @@ public class Main {
             System.out.println(" ");
         }
     }
-
-
-    private static void removerIndices(List<List<Vertex>> indicesDeRemocao, List<List<Vertex>> ciclos) {
-        int auxdebug = 0;
-        ciclos.removeAll(indicesDeRemocao);
-    }
-
-    private static boolean contemElemento(Vertex v, List<Vertex> cicloAtual) {
-        boolean resp = false;
-        for ( Vertex i: cicloAtual) {
-            if(v.getNumVertice() == i.getNumVertice()){
-                resp = true;
-                return resp;
-            }
-        }
-        return resp;
-    }
-
 
     static void combinationUtil(Vertex[] arr, Vertex[] data, int start, int end, int index, int tamSubconjunto, List<List<Vertex>> listaDeSubconjuntos) {
         try {
