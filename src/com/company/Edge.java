@@ -4,11 +4,22 @@ public class Edge implements Comparable<Edge>{
 
     private int numVertice;
     private int peso;
-    private int distancia=0;
-    private int pai =0 ;
+    private int distancia;
+    private int pai ;
+    private boolean isResidual;
+    private String rotulo;
 
     public Edge() {
-        init(-1,0,0,0);
+        init(-1,1,0,0,false,"");
+    }
+    public Edge(String rotulo) {
+        init(-1,1,0,0,false,rotulo);
+    }
+    public Edge(int numVertice, int peso) {
+        init(numVertice,peso,0,0,false,"");
+    }
+    public Edge(int numVertice, int peso, boolean isResidual,String rotulo) {
+        init(numVertice,peso,0,0,isResidual,rotulo);
     }
 
     @Override
@@ -18,15 +29,18 @@ public class Edge implements Comparable<Edge>{
         e.peso = this.peso;
         e.distancia= this.distancia;
         e.pai= this.pai;
+        e.isResidual = this.isResidual;
 
         return e;
     }
 
-    private void init(int numVertice, int peso, int distancia, int pai){
+    private void init(int numVertice, int peso, int distancia, int pai,boolean isResidual,String rotulo){
         this.numVertice = numVertice;
         this.peso = peso;
         this.distancia = distancia;
         this.pai = pai;
+        this.isResidual = isResidual;
+        this.rotulo = rotulo;
 
     }
 
@@ -60,6 +74,22 @@ public class Edge implements Comparable<Edge>{
 
     public void setPai(int pai) {
         this.pai = pai;
+    }
+
+    public boolean isResidual() {
+        return isResidual;
+    }
+
+    public void setResidual(boolean residual) {
+        isResidual = residual;
+    }
+
+    public String getRotulo() {
+        return rotulo;
+    }
+
+    public void setRotulo(String rotulo) {
+        this.rotulo = rotulo;
     }
 
     @Override

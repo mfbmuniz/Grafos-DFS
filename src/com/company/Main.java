@@ -72,11 +72,15 @@ public class Main {
 
                     Edge arestaOrigem = new Edge();
                     arestaOrigem.setNumVertice( Integer.parseInt(comando[0]) ) ;
-                    arestaOrigem.setPeso(Integer.parseInt(comando[2]));
+                    int peso = Integer.parseInt(comando[2]) < 1 ? 1 : Integer.parseInt(comando[2]) ;
+                    arestaOrigem.setPeso(peso);
+                    arestaOrigem.setRotulo(""+Integer.parseInt(comando[0]));
 
                     Edge arestaDestino = new Edge();
                     arestaDestino.setNumVertice(Integer.parseInt(comando[1]));
-                    arestaDestino.setPeso(Integer.parseInt(comando[2]));
+                    peso = Integer.parseInt(comando[2]) < 1 ? 1 : Integer.parseInt(comando[2]) ;
+                    arestaDestino.setPeso(peso);
+                    arestaDestino.setRotulo(""+Integer.parseInt(comando[1]));
 
                     int origem = Integer.parseInt (comando[0]) ;
                     int destino =  Integer.parseInt (comando[1]) ;
@@ -85,7 +89,12 @@ public class Main {
                         grafo[origem].arestas.add(arestaDestino);
                         grafo[destino].arestas.add(arestaOrigem);
                         grafo[origem].addDegree();
+                        grafo[origem].addOutDegree();
+                        grafo[origem].addInDegree();
                         grafo[destino].addDegree();
+                        grafo[destino].addOutDegree();
+                        grafo[destino].addInDegree();
+
                     }else{
 
                         grafo[origem].arestas.add(arestaDestino);
@@ -631,6 +640,183 @@ public class Main {
         }
         return -1;
     }
+
+    public static void fluxoFordFulkerson( Vertex[] grafo, int s_Source, int t_Sink ){
+
+        //como o algoritmo de fluxo é somente para digrafos ponderados
+        //se o grafo passado como parametro não for digrafo, o algorimo não executa.
+        if(grafo[0].getTipoGrafo() < 1 ){
+            return;
+        }
+
+        try {
+            // Vamos trabalhar com a copia do grafo original , este passo copia o grafo original
+            // Vamos também criar o grafo que irá conter a rede residual, que neste passo é igual ao original
+
+            Vertex[] grafoCopia = new Vertex[grafo.length];
+            Vertex[] grafoResidual = new Vertex[grafo.length];
+            for (int i = 0; i < grafo.length; i++) {
+                grafoCopia[i] = grafo[i].clone();
+                grafoResidual[i] = grafo[i].clone();
+
+            }
+            // vamos colocar as arestas reversas da rede residual, que por ser o inicio todas terão uma aresta de retorno com peso nulo.
+            // o metodo de verificar se um vertice u tem aresta com um vertice v do grafo E , será se a aresta em questão
+            // tem peso maior que 0, pois após este passo sempre haverá uma aresta de ida e uma de volta
+            insereArestasReversasDigrafo(grafoResidual);
+
+            List<String[]> caminhos = new LinkedList<String[]>();
+
+            String[] caminho = existeCaminho(grafoResidual, s_Source, t_Sink); //caminho através do rótulo
+
+            while(caminho.length > 0){
+
+                int fluxoMaximoAtual = encontraFluxoMaximo(caminho,grafoResidual);
+
+                for(int i= 0; i< caminho.length-1 ; i++){
+
+                    String s1= caminho[i].contains("R") ? ""+caminho[i].charAt(0) : caminho[i];
+                    int index = Integer.parseInt(s1);
+                    Vertex verticeAtual = grafoResidual[index];
+
+                    String s2= caminho[i+1].contains("R") ? ""+caminho[i].charAt(0) : caminho[i];
+                    int arestaAtual = Integer.parseInt(s2);
+                    Edge e = removeByName(verticeAtual.arestas,arestaAtual,caminho[i+1]);
+
+                    if(!e.isResidual()){ // e é um arco original */
+                        /* arestaAtual(e) = arestaAtual(e) - fluxoMaximoAtual;
+                        atualizar reverso;	*/
+
+                        e.setPeso( e.getPeso() - fluxoMaximoAtual);
+                        Edge residuo = removeByName(grafoResidual[arestaAtual].arestas,verticeAtual.getNumVertice(),"R");
+                        residuo.setPeso(fluxoMaximoAtual);
+
+                        grafoResidual[arestaAtual].arestas.add(residuo.clone());
+                        verticeAtual.arestas.add(e.clone());
+
+                    }else{ //* e é um arco reverso */
+                        /* arestaAtual(e) = arestaAtual(e) + fluxoMaximoAtual;
+                        atualizar reverso;*/
+
+                        e.setPeso( e.getPeso() + fluxoMaximoAtual);
+                        Edge originalEdge = removeByName(grafoResidual[arestaAtual].arestas,verticeAtual.getNumVertice(),"");
+                        originalEdge.setPeso(originalEdge.getPeso() - fluxoMaximoAtual);
+
+                        grafoResidual[arestaAtual].arestas.add(originalEdge.clone());
+                        verticeAtual.arestas.add(e.clone());
+                    }
+                }
+                caminhos.add(caminho);
+                caminho = existeCaminho(grafoResidual, s_Source, t_Sink);
+            }
+
+        }catch( Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    public static void insereArestasReversasDigrafo( Vertex[] grafoResidual){
+        for (Vertex u : grafoResidual) {
+            for(Edge e : u.arestas){
+                if( e.getPeso() > 0){
+                    Edge residuo  = new Edge ( u.getNumVertice(),0,true,(""+u.getNumVertice()+'R'));
+                    grafoResidual[e.getNumVertice()].arestas.add(residuo);
+                }
+            }
+        }
+    }
+    private static String[] existeCaminho(Vertex[] grafoResidual, int s_source, int t_sink) {
+        return new String[0];
+    }
+    private static int encontraFluxoMaximo(String []caminho, Vertex[] grafoResidual) {
+        int menorPeso = MAX_VALUE;
+        int menorPesoAtual;
+
+        for (int i = 0; i < caminho.length-1; i++) {
+            boolean isResidual = caminho[i+1].contains("R");
+            String s1= caminho[i].contains("R") ? ""+caminho[i].charAt(0) : caminho[i];
+            int indexVerticeAtual = Integer.parseInt(s1);
+
+            String s2= caminho[i+1].contains("R") ? ""+caminho[i].charAt(0) : caminho[i];
+            int indexArestaAtual = Integer.parseInt(s2);
+
+            menorPesoAtual= localizaPeso(grafoResidual[indexVerticeAtual].arestas, indexArestaAtual,isResidual);
+            menorPeso =  menorPesoAtual< menorPeso ? menorPesoAtual : menorPeso;
+
+        }
+        return menorPeso;
+    }
+    private static int localizaPeso(List<Edge> arestas, int indexArestaAtual, boolean isResidual) {
+
+        for (Edge e: arestas) {
+
+            if(e.getNumVertice() == indexArestaAtual && !isResidual){
+                return e.getPeso();
+            }else if(e.getNumVertice() == indexArestaAtual && e.getRotulo() == (""+indexArestaAtual+"R") && isResidual){
+                return  e.getPeso();
+            }
+        }
+        return -1;
+    }
+    private static Edge removeByName(List<Edge> arestas, int arestaAtual, String s) {
+        Edge arestaEncontrada =  new Edge();
+        boolean isResidual = s.contains("R");
+        for (Edge e: arestas) {
+            if(e.getNumVertice() == arestaAtual && !isResidual){
+                arestaEncontrada = e.clone();
+                arestas.remove(e);
+                return arestaEncontrada;
+            }else if(e.getNumVertice() == arestaAtual && e.getRotulo() == (""+arestaAtual+"R") && isResidual){
+                arestaEncontrada = e.clone();
+                arestas.remove(e);
+                return arestaEncontrada;
+            }
+        }
+        return arestaEncontrada;
+    }
+    public static Vertex[] simplesToDigrafo (Vertex [] grafo1){
+        try {
+            int tipoGrafo = grafo1[0].getTipoGrafo();
+            Vertex[] grafoCopia = new Vertex[grafo1.length];
+            for (int i = 0; i < grafo1.length; i++) {
+                grafoCopia[i] = grafo1[i].clone();
+            }
+
+            if (tipoGrafo == 0) {
+                for (int i = 0; i < grafoCopia.length; i++) {
+                    for (int j = 0; j < grafoCopia[i].arestas.size(); j++) {
+
+                        int arestaAtual = grafoCopia[i].arestas.get(j).getNumVertice();
+                        int verticeAtual = grafoCopia[i].getNumVertice();
+                        grafoCopia[arestaAtual].setDegree(0);
+                        grafoCopia[verticeAtual].setDegree(0);
+
+                        for (int k = 0; k < grafoCopia[arestaAtual].arestas.size(); k++) {
+                            if ( verticeAtual == grafoCopia[arestaAtual].arestas.get(k).getNumVertice()) {
+                                grafoCopia[arestaAtual].arestas.remove(k);
+                                grafoCopia[arestaAtual].subOutDegree();
+                            }
+                        }
+
+                        grafoCopia[i].setTipoGrafo(1);
+                        grafoCopia[i].setIsPonderado(1);
+                    }
+                }
+
+
+            }
+            return grafoCopia;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static void caminhosDisjuntos (List<String[]> caminhos ){
+
+
+
+    }
+
 
     public static void main(String[] args) {
         try {
