@@ -725,9 +725,11 @@ public class Main {
             }
         }
     }
+
     private static String[] existeCaminho(Vertex[] grafoResidual, int s_source, int t_sink) {
         return new String[0];
     }
+
     private static int encontraFluxoMaximo(String []caminho, Vertex[] grafoResidual) {
         int menorPeso = MAX_VALUE;
         int menorPesoAtual;
@@ -811,9 +813,39 @@ public class Main {
             return null;
         }
     }
-    public static void caminhosDisjuntos (List<String[]> caminhos ){
+    public static void caminhosDisjuntos (List<String> caminhos ){
+        System.out.println("----------caminhos-----------------------");
+        for (String s: caminhos ) {
+            System.out.println(s);
+        }
+        System.out.println("---------------------------------");
 
+        //List<String> caminhosDisjuntos = new LinkedList<String>();
+        List<String> listaDeRemocao = new LinkedList<String>();
+        for (String s: caminhos ) {
+            for (int i = 0; i < s.length()-1; i++) {
+                String chaveDeBuscaAtual = ""+s.charAt(i)+s.charAt(i+1);
+                for (String s2: caminhos ) {
+                    if(!s2.equals(s)){
+                        if(s2.contains(chaveDeBuscaAtual)){
+                            listaDeRemocao.add(s2);
+                        }
+                    }
+                }
 
+            }
+        }
+        System.out.println("----------------lista de remocao-----------------");
+        for (String s: listaDeRemocao ) {
+            System.out.println(s);
+        }
+        System.out.println("---------------------------------");
+        caminhos.removeAll(listaDeRemocao);
+        System.out.println("------------caminhos disjuntos de arestas---------------------");
+        for (String s: caminhos ) {
+            System.out.println(s);
+        }
+        System.out.println("---------------------------------");
 
     }
 
@@ -821,7 +853,15 @@ public class Main {
     public static void main(String[] args) {
         try {
 
-            System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub3.in) ");
+            List<String> caminhosDisjuntos = new LinkedList<String>();
+            caminhosDisjuntos.add("123456");
+            caminhosDisjuntos.add("452346");
+            caminhosDisjuntos.add("154362");
+            caminhosDisjuntos.add("653798");
+            caminhosDisjuntos.add("8761327896");
+            caminhosDisjuntos(caminhosDisjuntos);
+
+            /*System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub3.in) ");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
             String lidoArquivo = lerGrafoArquivo(input.readLine());
@@ -843,7 +883,7 @@ public class Main {
             searchCyclesWithPermutations(grafo);
             totalTime = System.currentTimeMillis() - startTime;
             System.out.println("Tempo total: "+totalTime+" ms. ");
-            System.out.println(" ");
+            System.out.println(" ");*/
         } catch (Exception e) {
             e.printStackTrace();
         }
