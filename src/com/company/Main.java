@@ -813,7 +813,22 @@ public class Main {
             return null;
         }
     }
-    public static void caminhosDisjuntos (List<String> caminhos ){
+
+    public static List<String> arrayToString (List<String[]>arrayCaminhos){
+        List<String> caminhos = new LinkedList<String>();
+        for (String []s : arrayCaminhos) {
+            String caminho ="";
+            for (int i = 0; i < s.length; i++) {
+                caminho+=s[i];
+            }
+            caminhos.add(caminho);
+        }
+        return caminhos;
+    }
+    public static void caminhosDisjuntos (List<String[]> arrayCaminhos ){
+
+        List<String> caminhos = arrayToString(arrayCaminhos);
+
         System.out.println("----------caminhos-----------------------");
         for (String s: caminhos ) {
             System.out.println(s);
@@ -853,13 +868,13 @@ public class Main {
     public static void main(String[] args) {
         try {
 
-            List<String> caminhosDisjuntos = new LinkedList<String>();
+            /*List<String> caminhosDisjuntos = new LinkedList<String>();
             caminhosDisjuntos.add("123456");
             caminhosDisjuntos.add("452346");
             caminhosDisjuntos.add("154362");
             caminhosDisjuntos.add("653798");
             caminhosDisjuntos.add("8761327896");
-            caminhosDisjuntos(caminhosDisjuntos);
+            caminhosDisjuntos(caminhosDisjuntos);*/
 
             /*System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub3.in) ");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
