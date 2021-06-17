@@ -950,21 +950,16 @@ public class Main {
                 if (vizinhoAtual.getCor() == 0) { //verifica se o próximo vertice é branco( nao visitado)
 
                     vizinhoAtual.setPai(atual.getNumVertice());
+                    if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
+                        caminhoAtual.add("F");
+                    }
                     visitarFordFulkerson(grafoCopia, timestamp, vizinhoAtual, verticeFinal_t, caminhoAtual);
 
                 }
-                if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
-                    caminhoAtual.add("F");
-                    atual.setCor(2);
-                    timestamp = timestamp + 1;
-                    atual.setTempoFinalizacao(timestamp);
 
-                    break;
-                }
 
             }
             if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
-                caminhoAtual.add("F");
                 caminhoAtual.add("F");
                 atual.setCor(2);
                 timestamp = timestamp + 1;
