@@ -865,25 +865,135 @@ public class Main {
     }
 
 
+    /**
+     * Implementacao da Busca em profundidade Modificada para encontrar ciclos
+     * @param grafo grafo a ser analisado
+     * @param  verticeInicial_s1 vertice onde a busca se iniciará
+     * @return List com os ciclos detectados sem repeticoes a partir do vertice atual escolhido como parametro.
+     */
+
+    public static List<String> dfsFordFulkerson(Vertex[]grafo, Vertex verticeInicial_s1, Vertex verticeFinal_t1 ){
+        try {
+            // Vamos trabalhar com a copia do grafo original , este passo copia o grafo
+            Vertex[] grafoCopia = new Vertex[grafo.length];
+            for (int i = 0; i < grafo.length; i++) {
+                grafoCopia[i] = grafo[i].clone();
+            }
+
+            for (Vertex u : grafoCopia) {
+                u.setCor(0);
+                u.setPai(-1);
+            }
+            int timestamp = 0;
+
+            Vertex verticeInicial_s = grafoCopia[verticeInicial_s1.getNumVertice()];
+            Vertex verticeFinal_t = grafoCopia[verticeFinal_t1.getNumVertice()];
+
+
+            //Lista com o caminho atual;
+            List<String> caminhoAtual = new ArrayList<String>() ;
+
+            if (verticeInicial_s.getCor() == 0) { //se a cor for branca
+                timestamp = visitarFordFulkerson(grafoCopia, timestamp, verticeInicial_s, verticeFinal_t,caminhoAtual); //lembrar que u e grafo copia estao sendo passados por referencia
+            }
+
+            for (Vertex u : grafoCopia) {
+                if (u.getCor() == 0) { //se a cor for branca
+                    timestamp = visitarFordFulkerson(grafoCopia, timestamp, verticeInicial_s, verticeFinal_t,caminhoAtual); //lembrar que u e grafo copia estao sendo passados por referencia
+                }
+            }
+
+
+            String caminho = "";
+            for (String s: caminhoAtual) {
+                caminho+=s;
+            }
+
+            System.out.println(caminho);
+            int cut= caminho.indexOf('F');
+            caminho = caminho.substring(0,cut);
+            String caminhoTratado = "";
+            for (int i = 0; i < caminho.length()-1; i++) {
+                if(caminho.charAt(i) != '|' && caminho.charAt(i+1) != '|') {
+                    caminhoTratado += caminho.charAt(i);
+                }
+            }
+            caminhoTratado+=caminho.charAt(caminho.length()-1);
+            System.out.println(caminhoTratado);
+
+            return caminhoAtual;
+        }catch (Exception e){e.printStackTrace();return null;}
+
+    }
+    /**
+     * Implementacao do metodo visita, da busca em profundidade (recursivo)
+     * @param caminhoAtual Lista geral de ciclos a partir do vertice inicial, passada por referencia para o preenchimento correto no metodo de visita.
+     * @param grafoCopia grafo a ser analisado (copia do grafo original)
+     * @param timestamp tempo de descoberta da busca em profundidade.
+     * @param atual vertice atual, iniciando no vertice passado como parametro no dfs e alterando conforme a recursividade é chamada.
+     * @param verticeFinal_t vertice final, iniciando no vertice passado como parametro no dfs e alterando conforme a recursividade é chamada.
+     * @param caminhoAtual caminho percorrido
+     * @return int com o valor do timestamp.
+     */
+    private static int visitarFordFulkerson(Vertex[] grafoCopia, int timestamp, Vertex atual, Vertex verticeFinal_t,List<String> caminhoAtual){
+        try {
+
+            timestamp = timestamp + 1;
+            atual.setTempoDescoberta(timestamp);
+            caminhoAtual.add("" + atual.getNumVertice());
+            atual.setCor(1);
+
+
+            for (Edge v : atual.arestas) {
+                Vertex vizinhoAtual = grafoCopia[v.getNumVertice()];
+
+                if (vizinhoAtual.getCor() == 0) { //verifica se o próximo vertice é branco( nao visitado)
+
+                    vizinhoAtual.setPai(atual.getNumVertice());
+                    visitarFordFulkerson(grafoCopia, timestamp, vizinhoAtual, verticeFinal_t, caminhoAtual);
+
+                }
+                if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
+                    caminhoAtual.add("F");
+                    atual.setCor(2);
+                    timestamp = timestamp + 1;
+                    atual.setTempoFinalizacao(timestamp);
+
+                    break;
+                }
+
+            }
+            if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
+                caminhoAtual.add("F");
+            }else{
+                caminhoAtual.add("|");
+            }
+            atual.setCor(2);
+            timestamp = timestamp + 1;
+            atual.setTempoFinalizacao(timestamp);
+            return timestamp;
+
+        }catch (Exception e){e.printStackTrace();return -1;}
+    }
+
+
+
     public static void main(String[] args) {
         try {
 
-            /*List<String> caminhosDisjuntos = new LinkedList<String>();
-            caminhosDisjuntos.add("123456");
-            caminhosDisjuntos.add("452346");
-            caminhosDisjuntos.add("154362");
-            caminhosDisjuntos.add("653798");
-            caminhosDisjuntos.add("8761327896");
-            caminhosDisjuntos(caminhosDisjuntos);*/
-
-            /*System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub3.in) ");
+            System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub3.in) ");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
             String lidoArquivo = lerGrafoArquivo(input.readLine());
             System.out.print("Lido do Arquivo: ");
             System.out.println(lidoArquivo);
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
-            System.out.print("Arestas padrão após grafo montado: ");
+            List<String> dfsresult = dfsFordFulkerson(grafo,grafo[0],grafo[3]);
+            System.out.println("_________----------------");
+            for (String s: dfsresult) {
+                System.out.println(" "+s);
+            }
+            /*System.out.print("Arestas padrão após grafo montado: ");
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
             System.out.println("------------------------------------------------------- ");
