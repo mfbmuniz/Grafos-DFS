@@ -641,12 +641,12 @@ public class Main {
         return -1;
     }
 
-    public static void fluxoFordFulkerson( Vertex[] grafo, int s_Source, int t_Sink ){
+    public static List<String[]> fluxoFordFulkerson(Vertex[] grafo, int s_Source, int t_Sink ){
 
         //como o algoritmo de fluxo é somente para digrafos ponderados
         //se o grafo passado como parametro não for digrafo, o algorimo não executa.
         if(grafo[0].getTipoGrafo() < 1 ){
-            return;
+            return null;
         }
 
         try {
@@ -709,11 +709,13 @@ public class Main {
                 caminhos.add(caminho);
                 caminho = existeCaminho(grafoResidual, s_Source, t_Sink);
             }
+            return caminhos;
 
         }catch( Exception e){
             e.printStackTrace();
         }
 
+        return null;
     }
     public static void insereArestasReversasDigrafo( Vertex[] grafoResidual){
         for (Vertex u : grafoResidual) {
@@ -727,7 +729,20 @@ public class Main {
     }
 
     private static String[] existeCaminho(Vertex[] grafoResidual, int s_source, int t_sink) {
-        return new String[0];
+        try {
+            String caminho = dfsFordFulkerson(grafoResidual, grafoResidual[s_source], grafoResidual[t_sink]);
+            String[]caminhoRetorno;
+            if(!caminho.contains("VAZIO")){
+                caminhoRetorno = caminho.split(",");
+            }else{
+                caminhoRetorno = new String[0];
+            }
+            return caminhoRetorno;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static int encontraFluxoMaximo(String []caminho, Vertex[] grafoResidual) {
@@ -872,7 +887,7 @@ public class Main {
      * @return List com os ciclos detectados sem repeticoes a partir do vertice atual escolhido como parametro.
      */
 
-    public static List<String> dfsFordFulkerson(Vertex[]grafo, Vertex verticeInicial_s1, Vertex verticeFinal_t1 ){
+    public static String dfsFordFulkerson(Vertex[]grafo, Vertex verticeInicial_s1, Vertex verticeFinal_t1 ){
         try {
             // Vamos trabalhar com a copia do grafo original , este passo copia o grafo
             Vertex[] grafoCopia = new Vertex[grafo.length];
@@ -894,37 +909,57 @@ public class Main {
             List<String> caminhoAtual = new ArrayList<String>() ;
 
             if (verticeInicial_s.getCor() == 0) { //se a cor for branca
-                timestamp = visitarFordFulkerson(grafoCopia, timestamp, verticeInicial_s, verticeFinal_t,caminhoAtual); //lembrar que u e grafo copia estao sendo passados por referencia
+                timestamp = visitarFordFulkerson(grafoCopia, timestamp, verticeInicial_s, verticeFinal_t,caminhoAtual,false); //lembrar que u e grafo copia estao sendo passados por referencia
             }
 
             for (Vertex u : grafoCopia) {
                 if (u.getCor() == 0) { //se a cor for branca
-                    timestamp = visitarFordFulkerson(grafoCopia, timestamp, verticeInicial_s, verticeFinal_t,caminhoAtual); //lembrar que u e grafo copia estao sendo passados por referencia
+                    timestamp = visitarFordFulkerson(grafoCopia, timestamp, verticeInicial_s, verticeFinal_t,caminhoAtual,false); //lembrar que u e grafo copia estao sendo passados por referencia
                 }
             }
+            String caminhoTratado = formataCaminho (caminhoAtual);
 
+            System.out.println(" Caminho Atual Encontrado: "+caminhoTratado);
 
-            String caminho = "";
-            for (String s: caminhoAtual) {
-                caminho+=s;
-            }
-
-            System.out.println(caminho);
-            /*int cut= caminho.indexOf('F');
-            caminho = caminho.substring(0,cut);
-            String caminhoTratado = "";
-            for (int i = 0; i < caminho.length()-1; i++) {
-                if(caminho.charAt(i) != '|' && caminho.charAt(i+1) != '|') {
-                    caminhoTratado += caminho.charAt(i);
-                }
-            }
-            caminhoTratado+=caminho.charAt(caminho.length()-1);
-            System.out.println(caminhoTratado);*/
-
-            return caminhoAtual;
+            return caminhoTratado;
         }catch (Exception e){e.printStackTrace();return null;}
 
     }
+
+    private static String formataCaminho(List<String> caminhoAtual) {
+
+        String caminho = "";
+        for (String s: caminhoAtual) {
+            caminho+=s;
+        }
+        if(!caminho.contains("F")){
+            return "VAZIO";
+        }else{
+            int cut = caminho.indexOf('F');
+            caminho = caminho.substring(0, cut);
+            String[] caminhoSplit = caminho.split(",");
+
+            for (int i = 0; i < caminhoSplit.length; i++) {
+                if (caminhoSplit[i].contains("|")) {
+                    String quantidadeRemocaoString = caminhoSplit[i].substring(0, caminhoSplit[i].length() - 1);
+                    int quantRemocao = quantidadeRemocaoString.length();
+                    for (int j = i - quantRemocao; j < i; j++) {
+                        caminhoSplit[j] = "NULO";
+                    }
+                    caminhoSplit[i] = "" + caminhoSplit[i].charAt(caminhoSplit[i].length() - 1);
+                }
+            }
+            String caminhoTratado = "";
+
+            for (int i = 0; i < caminhoSplit.length; i++) {
+                if (!caminhoSplit[i].contains("NULO")) {
+                    caminhoTratado += caminhoSplit[i]+",";
+                }
+            }
+            return caminhoTratado;
+        }
+    }
+
     /**
      * Implementacao do metodo visita, da busca em profundidade (recursivo)
      * @param caminhoAtual Lista geral de ciclos a partir do vertice inicial, passada por referencia para o preenchimento correto no metodo de visita.
@@ -935,44 +970,41 @@ public class Main {
      * @param caminhoAtual caminho percorrido
      * @return int com o valor do timestamp.
      */
-    private static int visitarFordFulkerson(Vertex[] grafoCopia, int timestamp, Vertex atual, Vertex verticeFinal_t,List<String> caminhoAtual){
+    private static int visitarFordFulkerson(Vertex[] grafoCopia, int timestamp, Vertex atual, Vertex verticeFinal_t,List<String> caminhoAtual, boolean arcoReverso)throws Exception{
         try {
 
             timestamp = timestamp + 1;
             atual.setTempoDescoberta(timestamp);
-            caminhoAtual.add("" + atual.getNumVertice());
+            if (!arcoReverso){
+                caminhoAtual.add("" + atual.getNumVertice() + ",");
+            }else{
+                caminhoAtual.add("" + atual.getNumVertice() +"R"+ ",");
+            }
             atual.setCor(1);
-
-
             for (Edge v : atual.arestas) {
                 Vertex vizinhoAtual = grafoCopia[v.getNumVertice()];
-
-                if (vizinhoAtual.getCor() == 0) { //verifica se o próximo vertice é branco( nao visitado)
+                if (vizinhoAtual.getCor() == 0 && v.getPeso()>0) { //verifica se o próximo vertice é branco( nao visitado)
 
                     vizinhoAtual.setPai(atual.getNumVertice());
                     if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
                         caminhoAtual.add("F");
                     }
-                    visitarFordFulkerson(grafoCopia, timestamp, vizinhoAtual, verticeFinal_t, caminhoAtual);
+                    arcoReverso = v.getRotulo().contains("R");
+                    visitarFordFulkerson(grafoCopia, timestamp, vizinhoAtual, verticeFinal_t, caminhoAtual,arcoReverso);
 
                 }
-
 
             }
             if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
                 caminhoAtual.add("F");
-                atual.setCor(2);
-                timestamp = timestamp + 1;
-                atual.setTempoFinalizacao(timestamp);
-                return timestamp;
-            }else {
-                caminhoAtual.remove(caminhoAtual.size() - 1);
-                atual.setCor(2);
-                timestamp = timestamp + 1;
-                atual.setTempoFinalizacao(timestamp);
-                return timestamp;
+            }else{
+                caminhoAtual.add("|");
             }
 
+            atual.setCor(2);
+            timestamp = timestamp + 1;
+            atual.setTempoFinalizacao(timestamp);
+            return timestamp;
         }catch (Exception e){e.printStackTrace();return -1;}
     }
 
@@ -988,11 +1020,11 @@ public class Main {
             System.out.print("Lido do Arquivo: ");
             System.out.println(lidoArquivo);
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
-            List<String> dfsresult = dfsFordFulkerson(grafo,grafo[0],grafo[3]);
-            System.out.println("_________----------------");
-            for (String s: dfsresult) {
+            List<String[]> arrayCaminhos = fluxoFordFulkerson(grafo,grafo[0].getNumVertice(),grafo[5].getNumVertice());
+            System.out.println("_________");
+            /*for (String s: dfsresult) {
                 System.out.println(" "+s);
-            }
+            }*/
             /*System.out.print("Arestas padrão após grafo montado: ");
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
