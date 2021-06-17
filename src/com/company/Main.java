@@ -910,7 +910,7 @@ public class Main {
             }
 
             System.out.println(caminho);
-            int cut= caminho.indexOf('F');
+            /*int cut= caminho.indexOf('F');
             caminho = caminho.substring(0,cut);
             String caminhoTratado = "";
             for (int i = 0; i < caminho.length()-1; i++) {
@@ -919,7 +919,7 @@ public class Main {
                 }
             }
             caminhoTratado+=caminho.charAt(caminho.length()-1);
-            System.out.println(caminhoTratado);
+            System.out.println(caminhoTratado);*/
 
             return caminhoAtual;
         }catch (Exception e){e.printStackTrace();return null;}
@@ -965,13 +965,18 @@ public class Main {
             }
             if (atual.getNumVertice() == verticeFinal_t.getNumVertice()) {
                 caminhoAtual.add("F");
-            }else{
-                caminhoAtual.add("|");
+                caminhoAtual.add("F");
+                atual.setCor(2);
+                timestamp = timestamp + 1;
+                atual.setTempoFinalizacao(timestamp);
+                return timestamp;
+            }else {
+                caminhoAtual.remove(caminhoAtual.size() - 1);
+                atual.setCor(2);
+                timestamp = timestamp + 1;
+                atual.setTempoFinalizacao(timestamp);
+                return timestamp;
             }
-            atual.setCor(2);
-            timestamp = timestamp + 1;
-            atual.setTempoFinalizacao(timestamp);
-            return timestamp;
 
         }catch (Exception e){e.printStackTrace();return -1;}
     }
