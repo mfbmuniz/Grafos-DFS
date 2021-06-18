@@ -76,11 +76,10 @@ public class Vertex implements Comparable<Vertex> {
         v.caminhos = (new ArrayList<Integer>());
         Edge temp;
         if (this.arestas != null) {
-            for (Edge vet : this.arestas) {
-                temp = new Edge();
-                temp.setNumVertice(vet.getNumVertice());
-                temp.setPeso(vet.getPeso());
+            for (Edge edg : this.arestas) {
+                temp = edg.clone();
                 v.arestas.add(temp);
+                temp = null;
             }
         }else {
             v.arestas = null;

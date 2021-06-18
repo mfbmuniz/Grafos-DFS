@@ -74,13 +74,15 @@ public class Main {
                     arestaOrigem.setNumVertice( Integer.parseInt(comando[0]) ) ;
                     int peso = Integer.parseInt(comando[2]) < 1 ? 1 : Integer.parseInt(comando[2]) ;
                     arestaOrigem.setPeso(peso);
-                    arestaOrigem.setRotulo(""+Integer.parseInt(comando[0]));
+                    String rotuloOrigem = ""+Integer.parseInt(comando[1]);
+                    arestaOrigem.setRotulo (rotuloOrigem );
 
                     Edge arestaDestino = new Edge();
                     arestaDestino.setNumVertice(Integer.parseInt(comando[1]));
                     peso = Integer.parseInt(comando[2]) < 1 ? 1 : Integer.parseInt(comando[2]) ;
                     arestaDestino.setPeso(peso);
-                    arestaDestino.setRotulo(""+Integer.parseInt(comando[1]));
+                    String rotuloDestino = ""+Integer.parseInt(comando[1]);
+                    arestaDestino.setRotulo( rotuloDestino );
 
                     int origem = Integer.parseInt (comando[0]) ;
                     int destino =  Integer.parseInt (comando[1]) ;
@@ -669,7 +671,7 @@ public class Main {
 
             String[] caminho = existeCaminho(grafoResidual, s_Source, t_Sink); //caminho através do rótulo
 
-            while(caminho.length > 0){
+            while(caminho.length > 0 && (caminho.equals("VAZIO")) ==false ){
 
                 int fluxoMaximoAtual = encontraFluxoMaximo(caminho,grafoResidual);
 
@@ -679,8 +681,9 @@ public class Main {
                     int index = Integer.parseInt(s1);
                     Vertex verticeAtual = grafoResidual[index];
 
-                    String s2= caminho[i+1].contains("R") ? ""+caminho[i].charAt(0) : caminho[i];
+                    String s2= caminho[i+1].contains("R") ? ""+caminho[i+1].charAt(0) : caminho[i+1];
                     int arestaAtual = Integer.parseInt(s2);
+
                     Edge e = removeByName(verticeAtual.arestas,arestaAtual,caminho[i+1]);
 
                     if(!e.isResidual()){ // e é um arco original */
@@ -732,7 +735,7 @@ public class Main {
         try {
             String caminho = dfsFordFulkerson(grafoResidual, grafoResidual[s_source], grafoResidual[t_sink]);
             String[]caminhoRetorno;
-            if(!caminho.contains("VAZIO")){
+            if(!caminho.equals("VAZIO")){
                 caminhoRetorno = caminho.split(",");
             }else{
                 caminhoRetorno = new String[0];
@@ -754,7 +757,7 @@ public class Main {
             String s1= caminho[i].contains("R") ? ""+caminho[i].charAt(0) : caminho[i];
             int indexVerticeAtual = Integer.parseInt(s1);
 
-            String s2= caminho[i+1].contains("R") ? ""+caminho[i].charAt(0) : caminho[i];
+            String s2= caminho[i+1].contains("R") ? ""+caminho[i+1].charAt(0) : caminho[i+1];
             int indexArestaAtual = Integer.parseInt(s2);
 
             menorPesoAtual= localizaPeso(grafoResidual[indexVerticeAtual].arestas, indexArestaAtual,isResidual);
@@ -766,10 +769,10 @@ public class Main {
     private static int localizaPeso(List<Edge> arestas, int indexArestaAtual, boolean isResidual) {
 
         for (Edge e: arestas) {
-
+            String rotulo = ""+indexArestaAtual+"R";
             if(e.getNumVertice() == indexArestaAtual && !isResidual){
                 return e.getPeso();
-            }else if(e.getNumVertice() == indexArestaAtual && e.getRotulo() == (""+indexArestaAtual+"R") && isResidual){
+            }else if(e.getNumVertice() == indexArestaAtual && e.getRotulo().equals(rotulo) && isResidual){
                 return  e.getPeso();
             }
         }
@@ -779,11 +782,12 @@ public class Main {
         Edge arestaEncontrada =  new Edge();
         boolean isResidual = s.contains("R");
         for (Edge e: arestas) {
+            String rotulo = ""+arestaAtual+"R";
             if(e.getNumVertice() == arestaAtual && !isResidual){
                 arestaEncontrada = e.clone();
                 arestas.remove(e);
                 return arestaEncontrada;
-            }else if(e.getNumVertice() == arestaAtual && e.getRotulo() == (""+arestaAtual+"R") && isResidual){
+            }else if(e.getNumVertice() == arestaAtual && e.getRotulo().equals(rotulo)  && isResidual){
                 arestaEncontrada = e.clone();
                 arestas.remove(e);
                 return arestaEncontrada;
@@ -919,7 +923,7 @@ public class Main {
             }
             String caminhoTratado = formataCaminho (caminhoAtual);
 
-            System.out.println(" Caminho Atual Encontrado: "+caminhoTratado);
+            //System.out.println(" Caminho Atual Encontrado: "+caminhoTratado);
 
             return caminhoTratado;
         }catch (Exception e){e.printStackTrace();return null;}

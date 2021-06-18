@@ -30,6 +30,7 @@ public class Edge implements Comparable<Edge>{
         e.distancia= this.distancia;
         e.pai= this.pai;
         e.isResidual = this.isResidual;
+        e.rotulo = this.rotulo;
 
         return e;
     }
