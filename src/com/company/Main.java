@@ -35,7 +35,6 @@ public class Main {
         return resp;
 
     }
-
     /**
      * Metodo que monta o grafo a partir de uma string padronizada //{"0" ,"0", "6" , "2,3,1" , "0,1,1" , "3,5,1" , "0,5,1" , "1,3,1" , "0,4,1" , "3,4,1" , "1,4,1" , "FIM" , "||"};
      * @param lidoArquivo String montada da leitura
@@ -108,7 +107,6 @@ public class Main {
             return grafo;
         }catch(Exception e){e.printStackTrace();return null;}
     }
-
     /**
      * Metodo que retorna uma String com as arestas do grafo formatada conforme o padrao do enunciado
      * @param grafo1 grafo a ser analisado
@@ -163,8 +161,6 @@ public class Main {
             return resp;
         }catch(Exception e){e.printStackTrace();return null;}
     }
-
-
     /**
      * Metodo que detecta ciclos em um grafo usando busca em profundidade
      * @param grafo grafo a ser analisado
@@ -187,14 +183,12 @@ public class Main {
         System.out.println("Total de ciclos: " +ciclosSomados.size());
         return ciclosSomados;
     }
-
     /**
      * Implementacao da Busca em profundidade Modificada para encontrar ciclos
      * @param grafo grafo a ser analisado
      * @param verticeInicialGrafoOriginal vertice onde a busca se iniciará
      * @return List com os ciclos detectados sem repeticoes a partir do vertice atual escolhido como parametro.
      */
-
     public static  List dfs(Vertex[]grafo, Vertex verticeInicialGrafoOriginal){
         try {
             // Vamos trabalhar com a copia do grafo original , este passo copia o grafo
@@ -294,7 +288,6 @@ public class Main {
 
         }catch (Exception e){e.printStackTrace();return -1;}
     }
-
     /**
      * Implementacao do metodo que adiciona o ciclo detectado a partir do caminhamento na lista de ciclos permanentes sem repeticoes
      * @param verticeAtual verticeAtual da busca em largura
@@ -338,13 +331,11 @@ public class Main {
         }
 
     }
-
     /**
      * Implementacao do metodo que valida se o ciclo emcontrado é mesmo um ciclo quando comparado com o grafo original, atravez da conferencia das arestas
      * @param cicloEncontradoTratado Lista com o ciclo a ser conferido.
      * @return boolean com true para valido e false para ciclo invalido.
      */
-
     private static boolean validaCiclo(List<Vertex> cicloEncontradoTratado) {
         boolean cicloValido =false;
         int i=0;
@@ -358,14 +349,12 @@ public class Main {
         }
         return cicloValido;
     }
-
     /**
      * Implementacao do metodo que insere na lista definitiva sem repeticoes
      * @param cicloEncontradoTratado Lista com o ciclo a ser inserido.
      * @param ciclos lista de ciclos
      * @return boolean com true para valido e false para ciclo invalido.
      */
-
     private static void inserirNaLista(List<Vertex> cicloEncontradoTratado, List<List<Vertex>> ciclos) {
         String ciclo_atual;
         String ciclo_insercao="";
@@ -391,7 +380,6 @@ public class Main {
      * @param cicloEncontradoTratado Lista com o ciclo a ser conferido.
      * @return ArrayList<Vertex> ccom o ciclo ordenado
      */
-
     private static ArrayList<Vertex> ordenaInsercao(List<Vertex> cicloEncontradoTratado) {
 
         int[]valor_posicao_DoMenorElemento = {MAX_VALUE,MAX_VALUE};
@@ -431,7 +419,6 @@ public class Main {
         }
         return (ArrayList<Vertex>) cicloOrdenado;
     }
-
     /**
      * Implementacao do metodo que adiciona o ciclo detectado a partir vertice finalizado na lista de ciclos permanentes sem repeticoes
      * @param verticeAtual verticeAtual da busca em largura
@@ -473,7 +460,6 @@ public class Main {
             System.out.println(" ");
         }
     }
-
     /**
      * Implementacao do metodo recursivo que gera todas os subconjuntos com 'R' elementos de uma determinada sequencia
      * no nosso caso estamos gerando todos os subconjuntos do grafo para permutar posteriormente.
@@ -486,7 +472,6 @@ public class Main {
      * @param tamSubconjunto tamanho 'R' do subconjunto atual.
      * @return void
      */
-
     static void combinationUtil(Vertex[] arr, Vertex[] data, int start, int end, int index, int tamSubconjunto, List<List<Vertex>> listaDeSubconjuntos) {
         try {
             // Current combination is ready to be stored, store.
@@ -511,7 +496,6 @@ public class Main {
             e.printStackTrace();
         }
     }
-
     /**
      * Implementacao do metodo que recebe um grafo para salvar os seus subconjuntos em uma lista
      * @param grafo grafo a ser analisado
@@ -526,7 +510,6 @@ public class Main {
         }
         return listaDeSubconjuntos;
     }
-
     /**
      * Implementacao do metodo que recebe uma sequencia de vertices em formato de string
      * encontra todas as permutações para este determinado subconjunto e salva na lista
@@ -535,7 +518,6 @@ public class Main {
      * @param permutations lista de permutacoes onde será salvo as permutacoes encontradas
      * @return Lista de todos os subconjuntos deste grafo
      */
-
     static void searchPermutations(String str, String ans ,List<String> permutations) {
     try{
         // If string is empty
@@ -562,7 +544,6 @@ public class Main {
             e.printStackTrace();
         }
     }
-
     /**
      * Implementacao do metodo que procura e imprime ciclos em um grafo baseado em permutações de seus vertices
      * @param grafo grafo a ser analisado
@@ -598,7 +579,6 @@ public class Main {
             e.printStackTrace();
         }
     }
-
     /**
      * Implementacao do metodo que recebe uma lista das permutações da sequencia atual de vertices , verifica no
      * grafo se é um ciclo válido e insere na lista se verdadeiro
@@ -642,7 +622,13 @@ public class Main {
         }
         return -1;
     }
-
+    /**
+     * Implementacao do algoritmo de ford fulkerson
+     * @param grafo grafo a ser analisado
+     * @param s_Source origem
+     * @param t_Sink destino
+     * @return Lista de arrays de string com todos os caminhos de fluxo percorridos.
+     */
     public static List<String[]> fluxoFordFulkerson(Vertex[] grafo, int s_Source, int t_Sink ){
 
         //como o algoritmo de fluxo é somente para digrafos ponderados
@@ -720,6 +706,12 @@ public class Main {
 
         return null;
     }
+    /**
+     * Metodo que recebe um caminho de um grafo por referencia
+     * e um e insere todas as arestas residuais com valores de fluxo zerados
+     * @param grafoResidual grafo
+     * @return void
+     */
     public static void insereArestasReversasDigrafo( Vertex[] grafoResidual){
         for (Vertex u : grafoResidual) {
             for(Edge e : u.arestas){
@@ -730,7 +722,14 @@ public class Main {
             }
         }
     }
-
+    /**
+     * Metodo que recebe um caminho de um grafo e uma origem e um destino e retorna um caminho, se existente
+     * de s->t
+     * @param s_source origem
+     * @param t_sink destino
+     * @param grafoResidual grafo
+     * @return []String com o caminho, se inexistente []String vazio.
+     */
     private static String[] existeCaminho(Vertex[] grafoResidual, int s_source, int t_sink) {
         try {
             String caminho = dfsFordFulkerson(grafoResidual, grafoResidual[s_source], grafoResidual[t_sink]);
@@ -747,7 +746,12 @@ public class Main {
             return null;
         }
     }
-
+    /**
+     * Metodo que recebe um caminho de um grafo e um grafo e retorna o maior fluxo que pode passar por aquele caminho
+     * @param caminho caminho no grafo
+     * @param grafoResidual grafo
+     * @return int fluxo maximo possivel para este caminho
+     */
     private static int encontraFluxoMaximo(String []caminho, Vertex[] grafoResidual) {
         int menorPeso = MAX_VALUE;
         int menorPesoAtual;
@@ -766,6 +770,12 @@ public class Main {
         }
         return menorPeso;
     }
+    /**
+     * Metodo que recebe uma lista de arestas Edge e um numero de aresta(para vertice que ela incide)
+     * procura esta aresta na lista e retorna seu peso
+     * @param arestas Lista de arestas
+     * @return peso int
+     */
     private static int localizaPeso(List<Edge> arestas, int indexArestaAtual, boolean isResidual) {
 
         for (Edge e: arestas) {
@@ -778,6 +788,12 @@ public class Main {
         }
         return -1;
     }
+    /**
+     * Metodo que recebe uma lista de arestas Edge e um numero de aresta(para vertice que ela incide) remove da
+     * lista e retorna a remoção.
+     * @param arestas Lista de arestas
+     * @return arestaRemovida Edge e
+     */
     private static Edge removeByName(List<Edge> arestas, int arestaAtual, String s) {
         Edge arestaEncontrada =  new Edge();
         boolean isResidual = s.contains("R");
@@ -795,6 +811,11 @@ public class Main {
         }
         return arestaEncontrada;
     }
+    /**
+     * Metodo que recebe um grafo simples e trasnforma em dígrafo
+     * @param grafo1 grafo
+     * @return grafo []Vertex dígrafo
+     */
     public static Vertex[] simplesToDigrafo (Vertex [] grafo1){
         try {
             int tipoGrafo = grafo1[0].getTipoGrafo();
@@ -832,7 +853,11 @@ public class Main {
             return null;
         }
     }
-
+    /**
+     * Metodo que recebe uma lista de  array de string e converte em lista de strings
+     * @param arrayCaminhos Lista de Strings
+     * @return lista de String List<String>
+     */
     public static List<String> arrayToString (List<String[]>arrayCaminhos){
         List<String> caminhos = new LinkedList<String>();
         for (String []s : arrayCaminhos) {
@@ -844,17 +869,24 @@ public class Main {
         }
         return caminhos;
     }
-    public static void caminhosDisjuntos (List<String[]> arrayCaminhos ){
+    /**
+     * Metodo que recebe um grafo, uma origem e um destino e printa todos os caminhos disjuntos de s->t
+     * @param grafo grafo a ser analisado
+     * @param s_Source vertice onde a busca se iniciará t_Source
+     * @param  t_Sink vertice onde a irá finalizar t_Sink
+     * @return void
+     */
+     public static void caminhosDisjuntos (Vertex[]grafo, int s_Source, int t_Sink){
 
+        List<String[]> arrayCaminhos = fluxoFordFulkerson(grafo,grafo[s_Source].getNumVertice(),grafo[t_Sink].getNumVertice());
         List<String> caminhos = arrayToString(arrayCaminhos);
 
-        System.out.println("----------caminhos-----------------------");
+        System.out.println("----------caminhos existentes------------");
         for (String s: caminhos ) {
             System.out.println(s);
         }
-        System.out.println("---------------------------------");
+        System.out.println("-----------------------------------------");
 
-        //List<String> caminhosDisjuntos = new LinkedList<String>();
         List<String> listaDeRemocao = new LinkedList<String>();
         for (String s: caminhos ) {
             for (int i = 0; i < s.length()-1; i++) {
@@ -869,28 +901,21 @@ public class Main {
 
             }
         }
-        System.out.println("----------------lista de remocao-----------------");
-        for (String s: listaDeRemocao ) {
-            System.out.println(s);
-        }
-        System.out.println("---------------------------------");
         caminhos.removeAll(listaDeRemocao);
-        System.out.println("------------caminhos disjuntos de arestas---------------------");
+        System.out.println("------Caminhos Disjuntos de arestas------");
         for (String s: caminhos ) {
             System.out.println(s);
         }
-        System.out.println("---------------------------------");
+        System.out.println("-----------------------------------------");
 
     }
-
-
     /**
-     * Implementacao da Busca em profundidade Modificada para encontrar ciclos
+     * Implementacao da Busca em profundidade Modificada para caminhos simples
      * @param grafo grafo a ser analisado
-     * @param  verticeInicial_s1 vertice onde a busca se iniciará
-     * @return List com os ciclos detectados sem repeticoes a partir do vertice atual escolhido como parametro.
+     * @param verticeInicial_s1 vertice onde a busca se iniciará t_Source
+     * @param  verticeFinal_t1 vertice onde a irá finalizar t_Sink
+     * @return String com o caminho encontrado s -> t
      */
-
     public static String dfsFordFulkerson(Vertex[]grafo, Vertex verticeInicial_s1, Vertex verticeFinal_t1 ){
         try {
             // Vamos trabalhar com a copia do grafo original , este passo copia o grafo
@@ -929,7 +954,11 @@ public class Main {
         }catch (Exception e){e.printStackTrace();return null;}
 
     }
-
+    /**
+     * Implementacao que formata o caminho encontrado pela busca
+     * @param caminhoAtual caminho gerado.
+     * @return String de caminho formatada
+     */
     private static String formataCaminho(List<String> caminhoAtual) {
 
         String caminho = "";
@@ -963,14 +992,12 @@ public class Main {
             return caminhoTratado;
         }
     }
-
     /**
-     * Implementacao do metodo visita, da busca em profundidade (recursivo)
-     * @param caminhoAtual Lista geral de ciclos a partir do vertice inicial, passada por referencia para o preenchimento correto no metodo de visita.
+     * Implementacao do metodo visita adaptado para encontrar e marcar caminhos simples, da busca em profundidade (recursivo)
      * @param grafoCopia grafo a ser analisado (copia do grafo original)
      * @param timestamp tempo de descoberta da busca em profundidade.
-     * @param atual vertice atual, iniciando no vertice passado como parametro no dfs e alterando conforme a recursividade é chamada.
-     * @param verticeFinal_t vertice final, iniciando no vertice passado como parametro no dfs e alterando conforme a recursividade é chamada.
+     * @param atual vertice atual, iniciando no vertice passado como parametro no dfs e alterando conforme a recursividade é chamada, para o algoritmo é o s_Source.
+     * @param verticeFinal_t vertice final, vertice que marca o fim do caminho simples F t_Sink.
      * @param caminhoAtual caminho percorrido
      * @return int com o valor do timestamp.
      */
@@ -1012,23 +1039,19 @@ public class Main {
         }catch (Exception e){e.printStackTrace();return -1;}
     }
 
-
-
     public static void main(String[] args) {
         try {
 
-            System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub3.in) ");
+            System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub8.in) ");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
             String lidoArquivo = lerGrafoArquivo(input.readLine());
             System.out.print("Lido do Arquivo: ");
             System.out.println(lidoArquivo);
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
-            List<String[]> arrayCaminhos = fluxoFordFulkerson(grafo,grafo[0].getNumVertice(),grafo[5].getNumVertice());
-            System.out.println("_________");
-            /*for (String s: dfsresult) {
-                System.out.println(" "+s);
-            }*/
+            caminhosDisjuntos(grafo,0,5);
+
+            /*main tp2*/
             /*System.out.print("Arestas padrão após grafo montado: ");
             String printGrafo = printArestasPadrao(grafo);
             System.out.println(printGrafo);
