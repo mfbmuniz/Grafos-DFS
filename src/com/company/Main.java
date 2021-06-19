@@ -890,7 +890,8 @@ public class Main {
         List<String> listaDeRemocao = new LinkedList<String>();
         for (String s: caminhos ) {
             for (int i = 0; i < s.length()-1; i++) {
-                String chaveDeBuscaAtual = ""+s.charAt(i)+s.charAt(i+1);
+
+                String chaveDeBuscaAtual = ""+s.substring(i,i+1)+s.charAt(i+1);
                 for (String s2: caminhos ) {
                     if(!s2.equals(s)){
                         if(s2.contains(chaveDeBuscaAtual)){
@@ -1042,14 +1043,19 @@ public class Main {
     public static void main(String[] args) {
         try {
 
-            System.out.println("Digite o nome e extesão do arquivo padrão do grafo:   (exemplo: pub8.in) ");
+            System.out.println("Digite o nome e extensão do arquivo padrão do grafo e pressione ENTER:   (exemplo: pub8.in) ");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
             String lidoArquivo = lerGrafoArquivo(input.readLine());
             System.out.print("Lido do Arquivo: ");
             System.out.println(lidoArquivo);
             Vertex[] grafo = montarGrafoLista(lidoArquivo);
-            caminhosDisjuntos(grafo,0,5);
+
+            System.out.println("Digite o numero do vértice de origem, e pressione ENTER: ");
+            int s_Source = Integer.parseInt(input.readLine());
+            System.out.println("Digite o numero do vértice de Destino, e pressione ENTER: ");
+            int s_Sink = Integer.parseInt(input.readLine());
+            caminhosDisjuntos(grafo,s_Source,s_Sink);
 
             /*main tp2*/
             /*System.out.print("Arestas padrão após grafo montado: ");
